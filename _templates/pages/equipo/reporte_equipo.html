@@ -1,0 +1,235 @@
+{% extends layout %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Listado' %} {{ title_html }}{% endblock title %}
+{% block breadcumb %}
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        <a href="{% url 'inicio' %}" class="text-white">
+            Inicio
+        </a>
+    </li>
+    <!--end::Item-->
+    <!--begin::Item-->
+    <li class="breadcrumb-item">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+        <span class="svg-icon svg-icon-5 svg-icon-gray-700 mx-n2">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+													<path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z"
+                                                          fill="currentColor"/>
+												</svg>
+											</span>
+        <!--end::Svg Icon-->
+    </li>
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        {{ breadcumb_lista }}
+    </li>
+
+{% endblock %}
+{% block encabezado_pagina %}
+    {{ encabezado_pagina }}
+{% endblock %}
+
+{% block content %}
+    <div class="row g-5 g-xl-10 pt-4 mb-xl-10">
+    <div class="col-xl-12 mb-5 mb-xl-10">
+        <!--begin::Table Widget 4-->
+        <div class="card">
+            <!--begin::Card header-->
+            <form id="reporte" method="post">
+                {% csrf_token %}
+                <div class="card-header border-0 pt-6">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                        <div class="mb-10 mx-3">
+                            <label class="form-label fs-6 fw-semibold ">Empresa:</label>
+                            <select id="empresa" name="empresa" class="form-select form-select-solid fw-bold"
+                                    data-kt-select2="true"
+                                    data-placeholder="Select option" data-allow-clear="true" data-control="select2"
+                            >
+                                <option></option>
+                                {% for emp in empresa %}
+                                    <option class="fw-bold" value="{{ emp.nombre }}">{{ emp.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-10 mx-3">
+                            <label class="form-label fs-6 fw-semibold ">Marca:</label>
+                            <select id="marca" name="marca" class="form-select form-select-solid fw-bold"
+                                    data-kt-select2="true"
+                                    data-placeholder="Selecciona" data-allow-clear="true" data-control="select2"
+                            >
+                                <option></option>
+                                {% for mar in marca %}
+                                    <option class="fw-bold" value="{{ mar.nombre }}">{{ mar.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-10 mx-3">
+                            <label class="form-label fs-6 fw-semibold ">Modelo:</label>
+                            <select id="modelo" name="modelo" class="form-select form-select-solid fw-bold"
+                                    data-kt-select2="true"
+                                    data-placeholder="Selecciona" data-allow-clear="true" data-control="select2"
+                            >
+                                <option></option>
+                                {% for mod in modelo %}
+                                    <option class="fw-bold" value="{{ mod.nombre }}">{{ mod.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-10 mx-3">
+                            <label class="form-label fs-6 fw-semibold ">Estado:</label>
+                            <select id="estado" name="estado" class="form-select form-select-solid fw-bold"
+                                    data-kt-select2="true"
+                                    data-placeholder="Selecciona" data-allow-clear="true" data-control="select2"
+                            >
+                                <option></option>
+                                <option value="Activo">Activo</option>
+                                <option value="Reparacion">Reparacion</option>
+                                <option value="Venta">Venta</option>
+
+                            </select>
+                        </div>
+                        <div class="mb-10">
+                            <label class="form-label">Fecha</label>
+                            <input name="fecha_registro" class="form-control form-control-solid"
+                                   placeholder="Pick date rage"
+                                   id="kt_daterangepicker_1"/>
+                        </div>
+                        <!--end::Search-->
+                    </div>
+                    <!--begin::Card title-->
+                    <!--begin::Card toolbar-->
+
+                    <!--end::Card toolbar-->
+                </div>
+                <div class="d-flex justify-content-center mb-5" data-kt-{{ nombre_tabla }}-table-toolbar="base">
+                    <!--begin::Filter-->
+
+
+                    <!--end::Menu 1-->
+                    <!--end::Filter-->
+                    <!--begin::Export-->
+                    <button href="submit" class="btn btn-light-primary me-3">
+                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr078.svg-->
+                        <span class="svg-icon svg-icon-2">
+														<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                             xmlns="http://www.w3.org/2000/svg">
+															<rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546"
+                                                                  height="2" rx="1"
+                                                                  transform="rotate(45 17.0365 15.1223)"
+                                                                  fill="currentColor"/>
+															<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                  fill="currentColor"/>
+														</svg>
+													</span>
+                        <!--end::Svg Icon-->Filtrar
+                    </button>
+
+                </div>
+
+
+            </form>
+        </div>
+        <div class="col-xl-12 mb-5 mb-xl-10 my-5">
+            <!--begin::Table Widget 4-->
+            <div class="card">
+                <div class="card-body py-4">
+                    <!--begin::Table-->
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_{{ nombre_tabla }}">
+                        <!--begin::Table head-->
+                        <thead>
+                        <!--begin::Table row-->
+                        <tr class="text-start text-white fw-bold fs-7 text-uppercase gs-0 ">
+
+                            <th class="min-w-125px">Empresa</th>
+                            <th class="min-w-125px">Marca</th>
+                            <th class="min-w-125px">Modelo</th>
+                            <th class="min-w-125px">Chapa</th>
+                            <th class="min-w-125px">Categoria</th>
+                            <th class="min-w-125px">Estado</th>
+                            <th class="min-w-125px">Propiedades</th>
+
+                        </tr>
+
+                        <!--end::Table row-->
+                        </thead>
+                        <!--end::Table head-->
+                        <!--begin::Table body-->
+                        <tbody class="text-gray-600 fw-semibold">
+                        <!--begin::Table row-->
+                        {% if consulta %}
+                            {% for e in consulta %}
+                                <tr>
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="symbol symbol-50 flex-shrink-0 mx-2">
+                                                <img src="{{ e.get_foto }}" alt="photo">
+                                            </div>
+
+                                            <div class="ml-5">
+                                                <span class="text-dark-75 font-weight-bold line-height-sm d-block pb-2">{{ e.nombre }}</span>
+                                                <a href="#" class="text-muted text-hover-primary">{{ e.empresa.nombre }} -
+                                                    Chapa: {% if e.chapa %}{{ e.chapa }}{% else %}No tiene{% endif %}</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ e.marca }}</td>
+                                    <td>{{ e.modelo }}</td>
+                                    <td>{{ e.chapa }}</td>
+                                    <td>{{ e.categoria.nombre }}</td>
+
+                                    <td>
+                                        {% for p in e.propiedades.all %}
+                                            {{ p.nombre }}{% if forloop.last %}{% else %},{% endif %}<br>
+                                        {% endfor %}
+                                    </td>
+                                    <td class="text-end">
+                                        {% if e.estado == 'Activo' %}
+                                            <span class="badge py-3 px-4 fs-7 badge-light-primary ">{{ e.estado }}</span>
+                                        {% elif e.estado == 'Venta' %}
+                                            <span class="badge py-3 px-4 fs-7 badge-light-success">{{ e.estado }}</span>
+                                        {% elif e.estado == 'Reparación' %}
+                                            <span class="badge py-3 px-4 fs-7 badge-light-danger">{{ e.estado }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+
+                            <tr class="text-center">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-center">No hay resultados</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                        {% endif %}
+
+
+                        </tbody>
+                        <!--end::Table body-->
+                    </table>
+                    <!--end::Table-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Table Widget 4-->
+        </div>
+    </div>
+    <script>
+        var nombre_tabla = '{{ nombre_tabla }}';
+
+    </script>
+
+{% endblock content %}
+{% block js_extra %}
+
+{% endblock %}
+
+

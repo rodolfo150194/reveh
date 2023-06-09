@@ -1,0 +1,654 @@
+{% extends 'layout/master.html' %}
+
+{% block layout %}
+
+    <!--begin::Root-->
+    <div class="d-flex flex-column flex-root app-root" id="kt_app_root">
+        <!--begin::Page-->
+        <div class="app-page flex-column flex-column-fluid" id="kt_app_page">
+            <!--begin::Header-->
+            <div id="kt_app_header" class="app-header mb-6 mb-lg-10">
+                <!--begin::Header primary-->
+                <div class="app-header-primary" data-kt-sticky="true"
+                     data-kt-sticky-activate="{default: false, lg: true}"
+                     data-kt-sticky-name="app-header-primary-sticky"
+                     data-kt-sticky-offset="{default: false, lg: '300px'}">
+                    <!--begin::Header primary container-->
+                    <div class="app-container container-xxl d-flex align-items-stretch justify-content-between">
+                        <!--begin::Header mobile toggle-->
+                        <div class="d-flex align-items-center d-lg-none ms-n2 me-2" title="Show sidebar menu">
+                            <div class="btn btn-icon btn-active-color-primary w-35px h-35px"
+                                 id="kt_app_header_menu_toggle">
+                                <!--begin::Svg Icon | path: icons/duotune/abstract/abs015.svg-->
+                                <span class="svg-icon svg-icon-2">
+										<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+											<path d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7Z"
+                                                  fill="currentColor"/>
+											<path opacity="0.3"
+                                                  d="M21 14H3C2.4 14 2 13.6 2 13V11C2 10.4 2.4 10 3 10H21C21.6 10 22 10.4 22 11V13C22 13.6 21.6 14 21 14ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z"
+                                                  fill="currentColor"/>
+										</svg>
+									</span>
+                                <!--end::Svg Icon-->
+                            </div>
+                        </div>
+                        <!--end::Header mobile toggle-->
+                        <!--begin::Logo-->
+                        <div class="d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-15">
+                            <a href="../../demo48/dist/index.html">
+                                <img alt="Logo" src="{% asset 'media/logos/demo48-small.svg' %}" class="h-25px d-sm-none"/>
+                                <img alt="Logo" src="{% asset 'media/logos/demo48.svg' %}"
+                                     class="h-40px d-none d-sm-inline app-sidebar-logo-default theme-light-show"/>
+                                <img alt="Logo" src="{% asset 'media/logos/demo48-dark.svg' %}"
+                                     class="h-40px d-none d-sm-inline app-sidebar-logo-default theme-dark-show"/>
+                            </a>
+                        </div>
+                        <!--end::Logo-->
+                        <!--begin::Navbar-->
+                        {% include 'layout/partials/header-layout/_navbar.html' %}
+                        <!--end::Navbar-->
+                    </div>
+                    <!--end::Header primary container-->
+                </div>
+                <!--end::Header primary-->
+                <!--begin::Header secondary-->
+                <div class="app-header-secondary">
+                    <!--begin::Header secondary container-->
+                    <div class="app-container container-xxl d-flex align-items-stretch">
+                        <!--begin::Secondary-->
+                        <div class="d-flex flex-stack flex-row-fluid" id="kt_app_header_wrapper">
+                            <div class="">
+                                <!--begin::Menu wrapper-->
+                                <div class="app-header-menu app-header-mobile-drawer align-items-stretch"
+                                     data-kt-drawer="true" data-kt-drawer-name="app-header-menu"
+                                     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
+                                     data-kt-drawer-width="250px" data-kt-drawer-direction="start"
+                                     data-kt-drawer-toggle="#kt_app_header_menu_toggle" data-kt-swapper="true"
+                                     data-kt-swapper-mode="{default: 'append', lg: 'prepend'}"
+                                     data-kt-swapper-parent="{default: '#kt_app_body', lg: '#kt_app_header_wrapper'}">
+                                    <!--begin::Menu-->
+                                    {% include 'layout/partials/header-layout/_menu.html' %}<!--end::Menu-->
+                                </div>
+                                <!--end::Menu wrapper-->
+                            </div>
+                            <!--begin::Action-->
+                                <div class="px-4 px-lg-0 pt-5 pt-lg-0 text-end" data-kt-swapper="true" data-kt-swapper-mode="{default: 'append', lg: 'prepend'}" data-kt-swapper-parent="{default: '#kt_app_header_menu', lg: '#kt_app_header_wrapper'}">
+									<!--begin::Action-->
+									<a href="#" class="btn btn-flex btn-sm fw-bold btn-secondary text-white py-3" data-bs-toggle="modal" data-bs-target="#kt_configuracion_nomencladores">
+									<span class="d-none d-sm-inline ps-1">Configuracion</span></a>
+									<!--end::Action-->
+								</div>
+                            <!--end::Action-->
+                        </div>
+                        <!--end::Secondary-->
+                    </div>
+                    <!--end::Header secondary container-->
+                </div>
+                <!--end::Header secondary-->
+            </div>
+            <!--end::Header-->
+            <!--begin::Wrapper-->
+            <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
+                <!--begin::Toolbar-->
+                <div id="kt_app_toolbar" class="app-toolbar align-items-center">
+                    <!--begin::Toolbar container-->
+                    <div id="kt_app_toolbar_container" class="app-container container-xxl">
+                        <!--begin::Toolbar container-->
+                        <div class="d-flex flex-stack flex-row-fluid">
+                            <!--begin::Toolbar container-->
+                            <div class="d-flex flex-column flex-row-fluid">
+                                <!--begin::Toolbar wrapper-->
+                                <!--begin::Breadcrumb-->
+
+                                <ul class="breadcrumb breadcrumb-separatorless fw-semibold mb-3">
+                                    <!--begin::Item-->
+
+                                    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+                                        <a href="../../demo48/dist/index.html" class="text-white">
+                                            <i class="fonticon-home text-gray-700 fs-3"></i>
+                                        </a>
+                                    </li>
+                                    <!--end::Item-->
+                                    <!--begin::Item-->
+                                    <li class="breadcrumb-item">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+                                        <span class="svg-icon svg-icon-5 svg-icon-gray-700 mx-n2">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+													<path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z"
+                                                          fill="currentColor"/>
+												</svg>
+											</span>
+                                        <!--end::Svg Icon-->
+                                    </li>
+                                    {% block breadcumb %}
+
+                                    {% endblock %}
+                                </ul>
+
+                                <!--end::Breadcrumb-->
+                                <!--begin::Page title-->
+                                <div class="page-title d-flex align-items-center me-3">
+                                    <!--begin::Title-->
+                                    <h1 class="page-heading d-flex text-dark fw-bolder fs-1 flex-column justify-content-center my-0">
+                                        {% block encabezado_pagina %}{% endblock %}</h1>
+                                    <!--end::Title-->
+                                </div>
+                                <!--end::Page title-->
+                            </div>
+                            <!--end::Toolbar container-->
+                            <!--begin::Actions-->
+                            <div class="d-flex align-items-center gap-3">
+                                <!--begin::Secondary button-->
+                                <div class="m-0">
+                                    <!--begin::Menu-->
+                                    <a href="#" class="btn btn-flex btn-sm h-35px bg-body fw-bold"
+                                       data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">History</a>
+                                    <!--begin::Menu 1-->
+                                    <div class="menu menu-sub menu-sub-dropdown w-250px w-md-300px" data-kt-menu="true"
+                                         id="kt_menu_63d79113b0836">
+                                        <!--begin::Header-->
+                                        <div class="px-7 py-5">
+                                            <div class="fs-5 text-dark fw-bold">Filter Options</div>
+                                        </div>
+                                        <!--end::Header-->
+                                        <!--begin::Menu separator-->
+                                        <div class="separator border-gray-200"></div>
+                                        <!--end::Menu separator-->
+                                        <!--begin::Form-->
+                                        <div class="px-7 py-5">
+                                            <!--begin::Input group-->
+                                            <div class="mb-10">
+                                                <!--begin::Label-->
+                                                <label class="form-label fw-semibold">Status:</label>
+                                                <!--end::Label-->
+                                                <!--begin::Input-->
+                                                <div>
+                                                    <select class="form-select form-select-solid" data-kt-select2="true"
+                                                            data-placeholder="Select option"
+                                                            data-dropdown-parent="#kt_menu_63d79113b0836"
+                                                            data-allow-clear="true">
+                                                        <option></option>
+                                                        <option value="1">Approved</option>
+                                                        <option value="2">Pending</option>
+                                                        <option value="2">In Process</option>
+                                                        <option value="2">Rejected</option>
+                                                    </select>
+                                                </div>
+                                                <!--end::Input-->
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                            <div class="mb-10">
+                                                <!--begin::Label-->
+                                                <label class="form-label fw-semibold">Member Type:</label>
+                                                <!--end::Label-->
+                                                <!--begin::Options-->
+                                                <div class="d-flex">
+                                                    <!--begin::Options-->
+                                                    <label class="form-check form-check-sm form-check-custom form-check-solid me-5">
+                                                        <input class="form-check-input" type="checkbox" value="1"/>
+                                                        <span class="form-check-label">Author</span>
+                                                    </label>
+                                                    <!--end::Options-->
+                                                    <!--begin::Options-->
+                                                    <label class="form-check form-check-sm form-check-custom form-check-solid">
+                                                        <input class="form-check-input" type="checkbox" value="2"
+                                                               checked="checked"/>
+                                                        <span class="form-check-label">Customer</span>
+                                                    </label>
+                                                    <!--end::Options-->
+                                                </div>
+                                                <!--end::Options-->
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Input group-->
+                                            <div class="mb-10">
+                                                <!--begin::Label-->
+                                                <label class="form-label fw-semibold">Notifications:</label>
+                                                <!--end::Label-->
+                                                <!--begin::Switch-->
+                                                <div class="form-check form-switch form-switch-sm form-check-custom form-check-solid">
+                                                    <input class="form-check-input" type="checkbox" value=""
+                                                           name="notifications" checked="checked"/>
+                                                    <label class="form-check-label">Enabled</label>
+                                                </div>
+                                                <!--end::Switch-->
+                                            </div>
+                                            <!--end::Input group-->
+                                            <!--begin::Actions-->
+                                            <div class="d-flex justify-content-end">
+                                                <button type="reset"
+                                                        class="btn btn-sm btn-light btn-active-light-primary me-2"
+                                                        data-kt-menu-dismiss="true">Reset
+                                                </button>
+                                                <button type="submit" class="btn btn-sm btn-primary"
+                                                        data-kt-menu-dismiss="true">Apply
+                                                </button>
+                                            </div>
+                                            <!--end::Actions-->
+                                        </div>
+                                        <!--end::Form-->
+                                    </div>
+                                    <!--end::Menu 1-->
+                                    <!--end::Menu-->
+                                </div>
+                                <!--end::Secondary button-->
+                                <!--begin::Primary button-->
+
+                                <!--end::Primary button-->
+                            </div>
+                            <!--end::Actions-->
+                        </div>
+                        <!--end::Toolbar container-->
+                    </div>
+                    <!--end::Toolbar container-->
+                </div>
+                <!--end::Toolbar-->
+                <!--begin::Wrapper container-->
+                <div class="app-container container-xxl d-flex">
+                    <!--begin::Main-->
+                    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+                        <!--begin::Content wrapper-->
+                        <div class="d-flex flex-column flex-column-fluid">
+                            <!--begin::Content-->
+                            <div id="kt_app_content" class="app-content px-0">
+                                <!--begin::Row-->
+                                {% block content %}
+                                {% endblock content %}
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Content-->
+                        </div>
+                        <!--end::Content wrapper-->
+                        <!--begin::Footer-->
+                        {% include 'layout/partials/header-layout/_footer.html' %}
+                        <!--end::Footer-->
+                    </div>
+                    <!--end:::Main-->
+                </div>
+                <!--end::Wrapper container-->
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Page-->
+    </div>
+
+    {#{% include 'partials/_drawers.html' %}#}
+    {##}
+  <div id="kt_drawer_chat" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="chat" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'md': '500px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_drawer_chat_toggle" data-kt-drawer-close="#kt_drawer_chat_close">
+			<!--begin::Messenger-->
+			<div class="card w-100 rounded-0 border-0" id="kt_drawer_chat_messenger">
+				<!--begin::Card header-->
+				<div class="card-header pe-5" id="kt_drawer_chat_messenger_header">
+					<!--begin::Title-->
+					<div class="card-title">
+						<!--begin::User-->
+						<div class="d-flex justify-content-center flex-column me-3">
+							<a href="#" class="fs-4 fw-bold text-gray-900 text-hover-primary me-1 mb-2 lh-1">Brian Cox</a>
+							<!--begin::Info-->
+							<div class="mb-0 lh-1">
+								<span class="badge badge-success badge-circle w-10px h-10px me-1"></span>
+								<span class="fs-7 fw-semibold text-muted">Active</span>
+							</div>
+							<!--end::Info-->
+						</div>
+						<!--end::User-->
+					</div>
+					<!--end::Title-->
+					<!--begin::Card toolbar-->
+					<div class="card-toolbar">
+						<!--begin::Menu-->
+						<div class="me-2">
+							<button class="btn btn-sm btn-icon btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+								<i class="bi bi-three-dots fs-3"></i>
+							</button>
+							<!--begin::Menu 3-->
+							<div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true">
+								<!--begin::Heading-->
+								<div class="menu-item px-3">
+									<div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">Contacts</div>
+								</div>
+								<!--end::Heading-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<a href="#" class="menu-link px-3" data-bs-toggle="modal" data-bs-target="#kt_modal_users_search">Add Contact</a>
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3">
+									<a href="#" class="menu-link flex-stack px-3" data-bs-toggle="modal" data-bs-target="#kt_modal_invite_friends">Invite Contacts
+									<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Specify a contact email to send an invitation"></i></a>
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3" data-kt-menu-trigger="hover" data-kt-menu-placement="right-start">
+									<a href="#" class="menu-link px-3">
+										<span class="menu-title">Groups</span>
+										<span class="menu-arrow"></span>
+									</a>
+									<!--begin::Menu sub-->
+									<div class="menu-sub menu-sub-dropdown w-175px py-4">
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Create Group</a>
+										</div>
+										<!--end::Menu item-->
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Invite Members</a>
+										</div>
+										<!--end::Menu item-->
+										<!--begin::Menu item-->
+										<div class="menu-item px-3">
+											<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Settings</a>
+										</div>
+										<!--end::Menu item-->
+									</div>
+									<!--end::Menu sub-->
+								</div>
+								<!--end::Menu item-->
+								<!--begin::Menu item-->
+								<div class="menu-item px-3 my-1">
+									<a href="#" class="menu-link px-3" data-bs-toggle="tooltip" title="Coming soon">Settings</a>
+								</div>
+								<!--end::Menu item-->
+							</div>
+							<!--end::Menu 3-->
+						</div>
+						<!--end::Menu-->
+						<!--begin::Close-->
+						<div class="btn btn-sm btn-icon btn-active-light-primary" id="kt_drawer_chat_close">
+							<!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+							<span class="svg-icon svg-icon-2">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="currentColor" />
+									<rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="currentColor" />
+								</svg>
+							</span>
+							<!--end::Svg Icon-->
+						</div>
+						<!--end::Close-->
+					</div>
+					<!--end::Card toolbar-->
+				</div>
+				<!--end::Card header-->
+				<!--begin::Card body-->
+				<div class="card-body" id="kt_drawer_chat_messenger_body">
+					<!--begin::Messages-->
+					<div class="scroll-y me-n5 pe-5" data-kt-element="messages" data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_drawer_chat_messenger_header, #kt_drawer_chat_messenger_footer" data-kt-scroll-wrappers="#kt_drawer_chat_messenger_body" data-kt-scroll-offset="0px">
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">2 mins</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">How likely are you to recommend our company to your friends and family ?</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(out)-->
+						<div class="d-flex justify-content-end mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">5 mins</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text">Hey there, we’re just writing to let you know that you’ve been subscribed to a repository on GitHub.</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(out)-->
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">1 Hour</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">Ok, Understood!</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(out)-->
+						<div class="d-flex justify-content-end mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">2 Hours</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text">You’ll receive notifications for all issues, pull requests!</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(out)-->
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">3 Hours</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">You can unwatch this repository immediately by clicking here:
+								<a href="https://keenthemes.com">Keenthemes.com</a></div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(out)-->
+						<div class="d-flex justify-content-end mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">4 Hours</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text">Most purchased Business courses during this sale!</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(out)-->
+						<!--begin::Message(in)-->
+						<div class="d-flex justify-content-start mb-10">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">5 Hours</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">Company BBQ to celebrate the last quater achievements and goals. Food and drinks provided</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(in)-->
+						<!--begin::Message(template for out)-->
+						<div class="d-flex justify-content-end mb-10 d-none" data-kt-element="template-out">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-end">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Details-->
+									<div class="me-3">
+										<span class="text-muted fs-7 mb-1">Just now</span>
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary ms-1">You</a>
+									</div>
+									<!--end::Details-->
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-1.jpg" />
+									</div>
+									<!--end::Avatar-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-primary text-dark fw-semibold mw-lg-400px text-end" data-kt-element="message-text"></div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(template for out)-->
+						<!--begin::Message(template for in)-->
+						<div class="d-flex justify-content-start mb-10 d-none" data-kt-element="template-in">
+							<!--begin::Wrapper-->
+							<div class="d-flex flex-column align-items-start">
+								<!--begin::User-->
+								<div class="d-flex align-items-center mb-2">
+									<!--begin::Avatar-->
+									<div class="symbol symbol-35px symbol-circle">
+										<img alt="Pic" src="assets/media/avatars/300-25.jpg" />
+									</div>
+									<!--end::Avatar-->
+									<!--begin::Details-->
+									<div class="ms-3">
+										<a href="#" class="fs-5 fw-bold text-gray-900 text-hover-primary me-1">Brian Cox</a>
+										<span class="text-muted fs-7 mb-1">Just now</span>
+									</div>
+									<!--end::Details-->
+								</div>
+								<!--end::User-->
+								<!--begin::Text-->
+								<div class="p-5 rounded bg-light-info text-dark fw-semibold mw-lg-400px text-start" data-kt-element="message-text">Right before vacation season we have the next Big Deal for you.</div>
+								<!--end::Text-->
+							</div>
+							<!--end::Wrapper-->
+						</div>
+						<!--end::Message(template for in)-->
+					</div>
+					<!--end::Messages-->
+				</div>
+				<!--end::Card body-->
+				<!--begin::Card footer-->
+				<div class="card-footer pt-4" id="kt_drawer_chat_messenger_footer">
+					<!--begin::Input-->
+					<textarea class="form-control form-control-flush mb-3" rows="1" data-kt-element="input" placeholder="Type a message"></textarea>
+					<!--end::Input-->
+					<!--begin:Toolbar-->
+					<div class="d-flex flex-stack">
+						<!--begin::Actions-->
+						<div class="d-flex align-items-center me-2">
+							<button class="btn btn-sm btn-icon btn-active-light-primary me-1" type="button" data-bs-toggle="tooltip" title="Coming soon">
+								<i class="bi bi-paperclip fs-3"></i>
+							</button>
+							<button class="btn btn-sm btn-icon btn-active-light-primary me-1" type="button" data-bs-toggle="tooltip" title="Coming soon">
+								<i class="bi bi-upload fs-3"></i>
+							</button>
+						</div>
+						<!--end::Actions-->
+						<!--begin::Send-->
+						<button class="btn btn-primary" type="button" data-kt-element="send">Send</button>
+						<!--end::Send-->
+					</div>
+					<!--end::Toolbar-->
+				</div>
+				<!--end::Card footer-->
+			</div>
+			<!--end::Messenger-->
+		</div>
+
+    {##}
+    {% include 'partials/_scrolltop.html' %}
+    {% include 'partials/modals/_configuracion_nomencladores.html' %}
+    {% block js_extra %}
+    {% endblock %}
+
+{% endblock layout %}

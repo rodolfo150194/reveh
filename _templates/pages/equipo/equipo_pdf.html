@@ -1,0 +1,254 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Expediente</title>
+    <link rel="stylesheet" href="{{ bootstrap }}">
+    <style>
+
+        @page {
+            @frame content_frame { /* Content Frame */
+            left: 50pt;
+            width: 512pt;
+            top: 60pt;
+            height: 632pt;
+        }
+
+        }
+
+        .img {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .proveedor {
+            border: 1px solid black;
+            border-radius: 25px;
+            width: 150px !important;
+            padding: 5px;
+        }
+
+        .detalles_factura {
+            border: 1px solid black;
+            border-radius: 25px;
+            float: right;
+            width: 50px;
+            padding: 5px;
+
+        }
+
+        .table-bordered {
+            border: 1px solid black;
+        }
+
+        .head {
+
+            text-transform: uppercase;
+        }
+
+        .h2 {
+            font-size: 40px;
+            text-align: center;
+        }
+
+        .h3 {
+            font-size: 30px;
+            text-align: center;
+        }
+
+        #text_center {
+            text-align: center;
+        }
+
+        #factura thead th {
+            text-align: left;
+            border-bottom: 1px solid #000000;
+            border-top: 1px solid black;
+            padding-top: 4px;
+        }
+
+        #margin_top {
+            margin-top: 5px;
+        }
+
+        #factura thead tr {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .titulo {
+            background: #9d9d9d;
+        }
+
+        #factura tbody tr {
+            padding: 0;
+        }
+
+        .text-medium {
+            font-size: 14px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Content for Static Frame 'footer_frame' -->
+
+{#<img src="{{ icon }}" alt="imagen-factura" width="150px" height="50px" style="text-align: center;">#}
+<div class="container">
+    <h2 class="h2">EXPEDIENTE DE EQUIPO</h2>
+    <div class="row">
+        <div class="proveedor col-md-4">
+            <table>
+                <tr>
+                    <td rowspan="4"><p><img src="{{ BASE_DIR }}{{ equipo.get_foto }}" alt=""></p></td>
+                    <td colspan="2" class="titulo" id="text_center"><strong>{{ equipo.nombre |upper }}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>CATEGORIA</strong></td>
+                    <td><p>{{ equipo.categoria.nombre | upper }}</p></td>
+                </tr>
+                <tr>
+                    <td><strong>MODELO</strong></td>
+                    <td><p>{{ equipo.modelo.nombre }}</p></td>
+                </tr>
+                <tr>
+                    <td><strong>MARCA</strong></td>
+                    <td><p>{{ equipo.marca.nombre }}</p></td>
+                </tr>
+                <tr>
+                    <td colspan="3"><strong>DESCRIPCIÓN</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="3"><p>{{ equipo.descripcion }}</p></td>
+                </tr>
+                <tr>
+                    <td colspan="3" id="text_center" class="titulo"><strong>PROPIEDADES - VALOR</strong></td>
+                </tr>
+                {% if equipo.propiedadequipo_set.all.count > 0 %}
+                    {% for p in equipo.propiedadequipo_set.all %}
+                        <tr {% if forloop.first %}style="padding-top:3px" {% endif %}>
+                            <td colspan="2">{{ p.propiedad.nombre | upper }}</td>
+                            {% if p.valor is None %}
+                                <td colspan="1">---</td>
+                            {% elif p.valor %}
+                                <td colspan="1">{{ p.valor }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3" id="text-center">Este equipo no tiene propiedades</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td colspan="3"></td>
+                </tr>
+                <tr>
+                    <td colspan="3" id="text_center" class="titulo"><strong>PARTES</strong></td>
+                </tr>
+                {# -------------------------------partes----------------------------------------------#}
+                {% for partes in equipo.partes.all %}
+                    <tr>
+                        <td rowspan="4"><img src="{{ BASE_DIR }}{{ partes.get_foto }}" alt=""></td>
+                        <td colspan="2" id="text_center" class="titulo"><strong>{{ partes.nombre | upper }}</strong>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td><strong>CATEGORIA</strong></td>
+                        <td><p>{{ partes.categoria.nombre }}</p></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MODELO</strong></td>
+                        <td><p>{{ partes.modelo.nombre }}</p></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MARCA</strong></td>
+                        <td><p>{{ partes.marca.nombre }}</p></td>
+                    </tr>
+                    <tr>
+                        <td><strong>DESCRIPCION</strong></td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="3"><p>{{ partes.descripcion }}</p></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" id="text_center" class="titulo"><strong>PROPIEDADES - VALOR</strong></td>
+                    </tr>
+                    {% for p in partes.propiedadparte_set.all %}
+                        <tr {% if forloop.first %}style="padding-top:3px" {% endif %}>
+                            <td colspan="2">{{ p.propiedad.nombre | upper }}</td>
+                            {% if p.valor is None %}
+                                <td colspan="1">---</td>
+                            {% elif p.valor %}
+                                <td colspan="1">{{ p.valor }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3" id="text_center" class="titulo"><strong>PIEZAS
+                            DE {{ partes.nombre |upper }}</strong></td>
+                    </tr>
+                    {% for pie in partes.piezas.all %}
+                        <tr>
+                            <td rowspan="4"><img src="{{ BASE_DIR }}{{ pie.get_foto }}" alt=""></td>
+                            <td colspan="2" id="text_center" class="titulo"><strong>{{ pie.nombre | upper }}</strong>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td><strong>CATEGORIA</strong></td>
+                            <td><p>{{ pie.categoria.nombre }}</p></td>
+                        </tr>
+                        <tr>
+                            <td><strong>MODELO</strong></td>
+                            <td><p>{{ pie.modelo.nombre }}</p></td>
+                        </tr>
+                        <tr>
+                            <td><strong>MARCA</strong></td>
+                            <td><p>{{ pie.marca.nombre }}</p></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"><strong>DESCRIPCION</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"><p>{{ pie.descripcion }}</p></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" id="text_center" class="titulo"><strong>PROPIEDADES - VALOR</strong></td>
+                        </tr>
+                        {% for p in pie.propiedadpieza_set.all %}
+                            <tr {% if forloop.first %}style="padding-top:3px" {% endif %}>
+                                <td colspan="2">{{ p.propiedad.nombre | upper }}</td>
+                                {% if p.valor is None %}
+                                    <td colspan="1">---</td>
+                                {% elif p.valor %}
+                                    <td colspan="1">{{ p.valor }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    {% if forloop.last %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3"></td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

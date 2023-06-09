@@ -1,0 +1,530 @@
+<!--
+Define in dashboards/views.py file
+context.update({
+    'layout': KTTheme.setLayout('default.html', context),
+})
+-->
+{% extends layout %}
+
+{% load i18n utiles %}
+
+{% block title %}{% translate "Inicio" %}{% endblock %}
+{% block breadcumb %}
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">Inicio</li>
+{% endblock %}
+{% block encabezado_pagina %}
+    Inicio
+{% endblock %}
+{% block content %}
+
+    <div class="row g-5 g-xl-10 mb-xl-10">
+
+        <!--begin::Col-->
+        <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-4 mb-md-5 mb-xl-10">
+            <!--begin::Card widget 4-->
+            <div class="card card-flush h-md-50 mb-5 mb-xl-10">
+                <!--begin::Header-->
+                <div class="card-header pt-5">
+                    <!--begin::Title-->
+                    <div class="card-title d-flex flex-column">
+                        <!--begin::Info-->
+                        <div class="d-flex align-items-center">
+                            <!--begin::Currency-->
+                            {#                            <span class="fs-4 fw-semibold text-gray-400 me-1 align-self-start">$</span>#}
+                            <!--end::Currency-->
+                            <!--begin::Amount-->
+                            <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ equipos.count }}</span>
+                            <!--end::Amount-->
+                            <!--begin::Badge-->
+                            {% if porciento_crecimiento_mensual|es_positivo_o_negativo == 'positivo' %}
+
+                                <span class="badge badge-light-success fs-base">
+															<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+
+                                   <span class="svg-icon svg-icon-5 svg-icon-success ms-n1">
+																<svg width="24" height="24" viewBox="0 0 24 24"
+                                                                     fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<rect opacity="0.5" x="13" y="6" width="13"
+                                                                          height="2" rx="1" transform="rotate(90 13 6)"
+                                                                          fill="currentColor"/>
+																	<path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z"
+                                                                          fill="currentColor"/>
+																</svg>
+															</span>
+
+                                {{ porciento_crecimiento_mensual }}%
+                            </span>
+                            {% elif porciento_crecimiento_mensual|es_positivo_o_negativo == 'negativo' %}
+                                <span class="badge badge-light-danger fs-base">
+															<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+
+                                   <span class="svg-icon svg-icon-5 svg-icon-danger ms-n1">
+																<svg width="24" height="24" viewBox="0 0 24 24"
+                                                                     fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<rect opacity="0.5" x="11" y="18" width="13"
+                                                                          height="2" rx="1"
+                                                                          transform="rotate(-90 11 18)"
+                                                                          fill="currentColor"></rect>
+																	<path d="M11.4343 15.4343L7.25 11.25C6.83579 10.8358 6.16421 10.8358 5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75L11.2929 18.2929C11.6834 18.6834 12.3166 18.6834 12.7071 18.2929L18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25C17.8358 10.8358 17.1642 10.8358 16.75 11.25L12.5657 15.4343C12.2533 15.7467 11.7467 15.7467 11.4343 15.4343Z"
+                                                                          fill="currentColor"></path>
+																</svg>
+															</span>
+
+                                {{ porciento_crecimiento_mensual }}%
+                            </span>
+                            {% else %}
+                                <span class="badge badge-light-warning fs-base">
+															<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+
+
+
+                                {{ porciento_crecimiento_mensual }}%
+                            </span>
+
+                            {% endif %}
+                        </div>
+                        <!--end::Info-->
+                        <!--begin::Subtitle-->
+                        <span class="text-gray-400 pt-1 fw-semibold fs-6">Total de vehículos registrados</span>
+                        <!--end::Subtitle-->
+                    </div>
+                    <!--end::Title-->
+                </div>
+                <!--end::Header-->
+                <!--begin::Card body-->
+                <div class="card-body pt-6 pb-6">
+
+                    {% for equipo in top_3_equipo %}
+                        <div class="d-flex flex-stack my-4">
+                            <!--begin::Symbol-->
+                            <div class="symbol symbol-20px me-4">
+                                <div class="symbol-label fs-2 fw-semibold {% if forloop.counter == 1 %} bg-danger text-inverse-danger {% elif forloop.counter == 2 %} bg-success text-inverse-success {% elif forloop.counter == 3 %} bg-primary text-inverse-primary{% endif %}"></div>
+                            </div>
+                            <!--end::Symbol-->
+                            <!--begin::Section-->
+                            <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                                <!--begin:Author-->
+                                <div class="flex-grow-1 me-2">
+                                    <a href="#"
+                                       class="text-gray-800 text-hover-primary fs-6 fw-bold">{{ equipo.marca }}</a>
+                                    {#                                <span class="text-muted fw-semibold d-block fs-7">40+ Courses</span>#}
+                                </div>
+                                <!--end:Author-->
+                                <!--begin::Actions-->
+                                <span href="#"
+                                      class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary w-30px h-30px">
+                                {{ equipo.cant }}
+                            </span>
+                                <!--begin::Actions-->
+                            </div>
+                            <!--end::Section-->
+                        </div>
+
+                    {% endfor %}
+
+                    <!--end::Labels-->
+                </div>
+                <!--end::Card body-->
+            </div>
+
+            <div class="card card-flush h-md-50 mb-xl-10">
+                <!--begin::Header-->
+                <div class="card-header pt-5">
+                    <!--begin::Title-->
+                    <div class="card-title d-flex flex-column">
+                        <!--begin::Info-->
+                        <div class="d-flex align-items-center">
+                            <!--begin::Amount-->
+                            <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ equipos_venta_ultimo_mes.count }}</span>
+                            <!--end::Amount-->
+                            <!--begin::Badge-->
+                            {% if porciento_crecimiento_mensual_venta|es_positivo_o_negativo == 'positivo' %}
+
+                                <span class="badge badge-light-success fs-base">
+															<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+
+                                   <span class="svg-icon svg-icon-5 svg-icon-success ms-n1">
+																<svg width="24" height="24" viewBox="0 0 24 24"
+                                                                     fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<rect opacity="0.5" x="13" y="6" width="13"
+                                                                          height="2" rx="1" transform="rotate(90 13 6)"
+                                                                          fill="currentColor"/>
+																	<path d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z"
+                                                                          fill="currentColor"/>
+																</svg>
+															</span>
+
+                                {{ porciento_crecimiento_mensual_venta }}%
+                            </span>
+                            {% elif porciento_crecimiento_mensual_venta|es_positivo_o_negativo == 'negativo' %}
+                                <span class="badge badge-light-danger fs-base">
+															<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+
+                                   <span class="svg-icon svg-icon-5 svg-icon-danger ms-n1">
+																<svg width="24" height="24" viewBox="0 0 24 24"
+                                                                     fill="none" xmlns="http://www.w3.org/2000/svg">
+																	<rect opacity="0.5" x="11" y="18" width="13"
+                                                                          height="2" rx="1"
+                                                                          transform="rotate(-90 11 18)"
+                                                                          fill="currentColor"></rect>
+																	<path d="M11.4343 15.4343L7.25 11.25C6.83579 10.8358 6.16421 10.8358 5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75L11.2929 18.2929C11.6834 18.6834 12.3166 18.6834 12.7071 18.2929L18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25C17.8358 10.8358 17.1642 10.8358 16.75 11.25L12.5657 15.4343C12.2533 15.7467 11.7467 15.7467 11.4343 15.4343Z"
+                                                                          fill="currentColor"></path>
+																</svg>
+															</span>
+
+                                {{ porciento_crecimiento_mensual_venta }}%
+                            </span>
+                            {% else %}
+                                <span class="badge badge-light-warning fs-base">
+															<!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+
+
+
+                                {{ porciento_crecimiento_mensual_venta }}%
+                            </span>
+
+                            {% endif %}
+                            <!--end::Badge-->
+                        </div>
+                        <!--end::Info-->
+                        <!--begin::Subtitle-->
+                        <span class="text-gray-400 pt-1 fw-semibold fs-6">Ventas este mes</span>
+                        <!--end::Subtitle-->
+                    </div>
+                    <!--end::Title-->
+                </div>
+                <!--end::Header-->
+                <!--begin::Card body-->
+                <div class="card-body d-flex align-items-end pt-0">
+                    <!--begin::Progress-->
+                    <div class="d-flex align-items-center flex-column mt-3 w-100">
+                        <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+
+                            <span class="fw-bolder fs-6 text-dark">{{ equipos_venta.equipos_venta.count }}</span>
+                            <span class="fw-bold fs-6 text-gray-400">{{ equipos_venta.porciento|floatformat:2 }}%</span>
+
+                        </div>
+                        <div class="h-8px mx-3 w-100 bg-light-success rounded">
+                            <div class="bg-success rounded h-8px" role="progressbar"
+                                 style="width: 62%;" aria-valuenow="50" aria-valuemin="0"
+                                 aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <!--end::Progress-->
+                </div>
+                <!--end::Card body-->
+            </div>
+            <!--end::Card widget 5-->
+        </div>
+
+        <div class="col-lg-12 col-xl-12 col-xxl-8 mb-5 mb-xl-0">
+            <!--begin::Chart widget 3-->
+            <div class="card h-md-100">
+                <!--begin::Header-->
+                <div class="card-header align-items-center border-0">
+                    <!--begin::Title-->
+                    <h3 class="fw-bold text-gray-900 m-0">Recientes registros</h3>
+
+
+                </div>
+                <!--end::Header-->
+                <!--begin::Body-->
+                <div class="card-body pt-2">
+                    <!--begin::Nav-->
+                    <ul class="nav nav-pills nav-pills-custom mb-3">
+                        <!--begin::Item-->
+                        {% for cat in equipos_por_categoria %}
+                            <li class="nav-item mb-3 me-3 me-lg-6">
+                                <!--begin::Link-->
+                                <a class="nav-link d-flex justify-content-between flex-column flex-center overflow-hidden {% if forloop.first %}active{% endif %} w-80px h-85px py-4"
+                                   data-bs-toggle="pill" href="#{{ cat.categoria.nombre }}">
+                                    <!--begin::Icon-->
+                                    <div class="nav-icon">
+                                        <img alt=""
+                                             src="{{ cat.categoria.get_foto }}"
+                                             class=""/>
+                                    </div>
+                                    <!--end::Icon-->
+                                    <!--begin::Subtitle-->
+                                    <span class="nav-text text-gray-700 fw-bold fs-6 lh-1">{{ cat.categoria.nombre }}</span>
+                                    <!--end::Subtitle-->
+                                    <!--begin::Bullet-->
+                                    <span class="bullet-custom position-absolute bottom-0 w-100 h-4px bg-primary"></span>
+                                    <!--end::Bullet-->
+                                </a>
+                                <!--end::Link-->
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                    <!--end::Nav-->
+                    <!--begin::Tab Content-->
+                    <div class="tab-content">
+                        <!--begin::Tap pane-->
+                        {% for cat in equipos_por_categoria %}
+                            <div class="tab-pane fade show {% if forloop.first %}active{% endif %}"
+                                 id="{{ cat.categoria.nombre }}">
+                                <!--begin::Table container-->
+                                <div class="table-responsive">
+                                    <!--begin::Table-->
+                                    <table class="table table-row-dashed align-middle gs-0 gy-4 my-0">
+                                        <!--begin::Table head-->
+                                        <thead>
+                                        <tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
+                                            <th class="ps-0 w-50px"></th>
+                                            <th class="min-w-125px">Marca</th>
+                                            <th class="text-end min-w-100px">Modelo</th>
+                                            <th class="pe-0 text-end min-w-100px">Estado</th>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <!--end::Table head-->
+                                        <!--begin::Table body-->
+                                        <tbody>
+                                        {% for equipo in cat.equipos_cat.all %}
+                                            <tr>
+
+                                                <td>
+                                                    <img src="{{ equipo.get_foto }}"
+                                                         class="w-50px ms-n1" alt=""/>
+                                                </td>
+                                                <td class="ps-0">
+                                                    <a href="#"
+                                                       class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-start pe-0">{{ equipo.marca }}</a>
+                                                    <span class="text-gray-400 fw-semibold fs-7 d-block text-start ps-0">{{ equipo.chapa }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-gray-800 fw-bold d-block fs-6 ps-0 text-end">{{ equipo.modelo }}</span>
+                                                </td>
+                                                <td class="text-end pe-0">
+                                                    {% if equipo.estado == 'Activo' %}
+                                                        <span class="badge py-3 px-4 fs-7 badge-light-primary">{{ equipo.estado }}</span>
+                                                    {% elif equipo.estado == 'Venta' %}
+                                                        <span class="badge py-3 px-4 fs-7 badge-light-success">{{ equipo.estado }}</span>
+                                                    {% elif equipo.estado == 'Reparación' %}
+                                                        <span class="badge py-3 px-4 fs-7 badge-light-danger">{{ equipo.estado }}</span>
+                                                    {% endif %}
+                                                </td>
+
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                        <!--end::Table body-->
+                                    </table>
+                                    <!--end::Table-->
+                                </div>
+                                <div class="d-flex justify-content-center my-5">
+                                    <a href="{% url 'dashboards:lista_equipo' %}" class="btn btn-primary text-center">Ver
+                                        todos</a>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+
+
+                    </div>
+                    <!--end::Tab Content-->
+                </div>
+                <!--end: Card Body-->
+            </div>
+            <!--end::Chart widget 3-->
+        </div>
+        <div class="col-sm-6 col-xl-2 mb-xl-10">
+            <!--begin::Card widget 2-->
+            <div class="card h-lg-100">
+                <!--begin::Body-->
+                <div class="card-body d-flex justify-content-between align-items-start flex-column">
+                    <!--begin::Icon-->
+                    <div class="m-0">
+                        <!--begin::Svg Icon | path: icons/duotune/maps/map004.svg-->
+                       <span class="svg-icon svg-icon-2hx svg-icon-warning "><!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo8/dist/../src/media/svg/icons/Design/Substract.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+    <g   fill="none">
+        <rect x="0" y="0" width="24" height="24"/>
+        <path d="M6,9 L6,15 C6,16.6568542 7.34314575,18 9,18 L15,18 L15,18.8181818 C15,20.2324881 14.2324881,21 12.8181818,21 L5.18181818,21 C3.76751186,21 3,20.2324881 3,18.8181818 L3,11.1818182 C3,9.76751186 3.76751186,9 5.18181818,9 L6,9 Z" fill="currentColor" fill-rule="nonzero"/>
+        <path d="M10.1818182,4 L17.8181818,4 C19.2324881,4 20,4.76751186 20,6.18181818 L20,13.8181818 C20,15.2324881 19.2324881,16 17.8181818,16 L10.1818182,16 C8.76751186,16 8,15.2324881 8,13.8181818 L8,6.18181818 C8,4.76751186 8.76751186,4 10.1818182,4 Z" fill="currentColor" opacity="0.3"/>
+    </g>
+</svg><!--end::Svg Icon--></span>
+                        <!--end::Svg Icon-->
+                    </div>
+                    <!--end::Icon-->
+                    <!--begin::Section-->
+                    <div class="d-flex flex-column my-7">
+                        <!--begin::Number-->
+                        <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ piezas.count }}</span>
+                        <!--end::Number-->
+                        <!--begin::Follower-->
+                        <div class="m-0">
+                            <span class="fw-semibold fs-6 text-gray-400">Piezas</span>
+                        </div>
+                        <!--end::Follower-->
+                    </div>
+
+                    <!--end::Badge-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card widget 2-->
+        </div>
+        <div class="col-sm-6 col-xl-2 mb-xl-10">
+            <!--begin::Card widget 2-->
+            <div class="card h-lg-100">
+                <!--begin::Body-->
+                <div class="card-body d-flex justify-content-between align-items-start flex-column">
+                    <!--begin::Icon-->
+                    <div class="m-0">
+                        <!--begin::Svg Icon | path: icons/duotune/maps/map004.svg-->
+                        <span class="svg-icon svg-icon-2hx svg-icon-primary">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+																<path opacity="0.3"
+                                                                      d="M18.4 5.59998C21.9 9.09998 21.9 14.8 18.4 18.3C14.9 21.8 9.2 21.8 5.7 18.3L18.4 5.59998Z"
+                                                                      fill="currentColor"></path>
+																<path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM19.9 11H13V8.8999C14.9 8.6999 16.7 8.00005 18.1 6.80005C19.1 8.00005 19.7 9.4 19.9 11ZM11 19.8999C9.7 19.6999 8.39999 19.2 7.39999 18.5C8.49999 17.7 9.7 17.2001 11 17.1001V19.8999ZM5.89999 6.90002C7.39999 8.10002 9.2 8.8 11 9V11.1001H4.10001C4.30001 9.4001 4.89999 8.00002 5.89999 6.90002ZM7.39999 5.5C8.49999 4.7 9.7 4.19998 11 4.09998V7C9.7 6.8 8.39999 6.3 7.39999 5.5ZM13 17.1001C14.3 17.3001 15.6 17.8 16.6 18.5C15.5 19.3 14.3 19.7999 13 19.8999V17.1001ZM13 4.09998C14.3 4.29998 15.6 4.8 16.6 5.5C15.5 6.3 14.3 6.80002 13 6.90002V4.09998ZM4.10001 13H11V15.1001C9.1 15.3001 7.29999 16 5.89999 17.2C4.89999 16 4.30001 14.6 4.10001 13ZM18.1 17.1001C16.6 15.9001 14.8 15.2 13 15V12.8999H19.9C19.7 14.5999 19.1 16.0001 18.1 17.1001Z"
+                                                                      fill="currentColor"></path>
+															</svg>
+														</span>
+                        <!--end::Svg Icon-->
+                    </div>
+                    <!--end::Icon-->
+                    <!--begin::Section-->
+                    <div class="d-flex flex-column my-7">
+                        <!--begin::Number-->
+                        <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ partes.count }}</span>
+                        <!--end::Number-->
+                        <!--begin::Follower-->
+                        <div class="m-0">
+                            <span class="fw-semibold fs-6 text-gray-400">Partes</span>
+                        </div>
+                        <!--end::Follower-->
+                    </div>
+
+                    <!--end::Badge-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card widget 2-->
+        </div>
+    <div class="col-sm-6 col-xl-2 mb-xl-10">
+            <!--begin::Card widget 2-->
+            <div class="card h-lg-100">
+                <!--begin::Body-->
+                <div class="card-body d-flex justify-content-between align-items-start flex-column">
+                    <!--begin::Icon-->
+                    <div class="m-0">
+                        <!--begin::Svg Icon | path: icons/duotune/maps/map004.svg-->
+                        <span class="svg-icon svg-icon-2hx svg-icon-success">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+																<path opacity="0.3"
+                                                                      d="M18.4 5.59998C21.9 9.09998 21.9 14.8 18.4 18.3C14.9 21.8 9.2 21.8 5.7 18.3L18.4 5.59998Z"
+                                                                      fill="currentColor"></path>
+																<path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM19.9 11H13V8.8999C14.9 8.6999 16.7 8.00005 18.1 6.80005C19.1 8.00005 19.7 9.4 19.9 11ZM11 19.8999C9.7 19.6999 8.39999 19.2 7.39999 18.5C8.49999 17.7 9.7 17.2001 11 17.1001V19.8999ZM5.89999 6.90002C7.39999 8.10002 9.2 8.8 11 9V11.1001H4.10001C4.30001 9.4001 4.89999 8.00002 5.89999 6.90002ZM7.39999 5.5C8.49999 4.7 9.7 4.19998 11 4.09998V7C9.7 6.8 8.39999 6.3 7.39999 5.5ZM13 17.1001C14.3 17.3001 15.6 17.8 16.6 18.5C15.5 19.3 14.3 19.7999 13 19.8999V17.1001ZM13 4.09998C14.3 4.29998 15.6 4.8 16.6 5.5C15.5 6.3 14.3 6.80002 13 6.90002V4.09998ZM4.10001 13H11V15.1001C9.1 15.3001 7.29999 16 5.89999 17.2C4.89999 16 4.30001 14.6 4.10001 13ZM18.1 17.1001C16.6 15.9001 14.8 15.2 13 15V12.8999H19.9C19.7 14.5999 19.1 16.0001 18.1 17.1001Z"
+                                                                      fill="currentColor"></path>
+															</svg>
+														</span>
+                        <!--end::Svg Icon-->
+                    </div>
+                    <!--end::Icon-->
+                    <!--begin::Section-->
+                    <div class="d-flex flex-column my-7">
+                        <!--begin::Number-->
+                        <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ activos.count }}</span>
+                        <!--end::Number-->
+                        <!--begin::Follower-->
+                        <div class="m-0">
+                            <span class="fw-semibold fs-6 text-gray-400">Activos</span>
+                        </div>
+                        <!--end::Follower-->
+                    </div>
+
+                    <!--end::Badge-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card widget 2-->
+        </div>
+    <div class="col-sm-6 col-xl-2 mb-xl-10">
+            <!--begin::Card widget 2-->
+            <div class="card h-lg-100">
+                <!--begin::Body-->
+                <div class="card-body d-flex justify-content-between align-items-start flex-column">
+                    <!--begin::Icon-->
+                    <div class="m-0">
+                        <!--begin::Svg Icon | path: icons/duotune/maps/map004.svg-->
+                        <span class="svg-icon svg-icon-2hx svg-icon-danger">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+																<path opacity="0.3"
+                                                                      d="M18.4 5.59998C21.9 9.09998 21.9 14.8 18.4 18.3C14.9 21.8 9.2 21.8 5.7 18.3L18.4 5.59998Z"
+                                                                      fill="currentColor"></path>
+																<path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM19.9 11H13V8.8999C14.9 8.6999 16.7 8.00005 18.1 6.80005C19.1 8.00005 19.7 9.4 19.9 11ZM11 19.8999C9.7 19.6999 8.39999 19.2 7.39999 18.5C8.49999 17.7 9.7 17.2001 11 17.1001V19.8999ZM5.89999 6.90002C7.39999 8.10002 9.2 8.8 11 9V11.1001H4.10001C4.30001 9.4001 4.89999 8.00002 5.89999 6.90002ZM7.39999 5.5C8.49999 4.7 9.7 4.19998 11 4.09998V7C9.7 6.8 8.39999 6.3 7.39999 5.5ZM13 17.1001C14.3 17.3001 15.6 17.8 16.6 18.5C15.5 19.3 14.3 19.7999 13 19.8999V17.1001ZM13 4.09998C14.3 4.29998 15.6 4.8 16.6 5.5C15.5 6.3 14.3 6.80002 13 6.90002V4.09998ZM4.10001 13H11V15.1001C9.1 15.3001 7.29999 16 5.89999 17.2C4.89999 16 4.30001 14.6 4.10001 13ZM18.1 17.1001C16.6 15.9001 14.8 15.2 13 15V12.8999H19.9C19.7 14.5999 19.1 16.0001 18.1 17.1001Z"
+                                                                      fill="currentColor"></path>
+															</svg>
+														</span>
+                        <!--end::Svg Icon-->
+                    </div>
+                    <!--end::Icon-->
+                    <!--begin::Section-->
+                    <div class="d-flex flex-column my-7">
+                        <!--begin::Number-->
+                        <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ reparacion.count }}</span>
+                        <!--end::Number-->
+                        <!--begin::Follower-->
+                        <div class="m-0">
+                            <span class="fw-semibold fs-6 text-gray-400">Reparacion</span>
+                        </div>
+                        <!--end::Follower-->
+                    </div>
+
+                    <!--end::Badge-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card widget 2-->
+        </div>
+    <div class="col-sm-6 col-xl-2 mb-xl-10">
+            <!--begin::Card widget 2-->
+            <div class="card h-lg-100">
+                <!--begin::Body-->
+                <div class="card-body d-flex justify-content-between align-items-start flex-column">
+                    <!--begin::Icon-->
+                    <div class="m-0">
+                        <!--begin::Svg Icon | path: icons/duotune/maps/map004.svg-->
+                        <span class="svg-icon svg-icon-2hx svg-icon-primary">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+																<path opacity="0.3"
+                                                                      d="M18.4 5.59998C21.9 9.09998 21.9 14.8 18.4 18.3C14.9 21.8 9.2 21.8 5.7 18.3L18.4 5.59998Z"
+                                                                      fill="currentColor"></path>
+																<path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM19.9 11H13V8.8999C14.9 8.6999 16.7 8.00005 18.1 6.80005C19.1 8.00005 19.7 9.4 19.9 11ZM11 19.8999C9.7 19.6999 8.39999 19.2 7.39999 18.5C8.49999 17.7 9.7 17.2001 11 17.1001V19.8999ZM5.89999 6.90002C7.39999 8.10002 9.2 8.8 11 9V11.1001H4.10001C4.30001 9.4001 4.89999 8.00002 5.89999 6.90002ZM7.39999 5.5C8.49999 4.7 9.7 4.19998 11 4.09998V7C9.7 6.8 8.39999 6.3 7.39999 5.5ZM13 17.1001C14.3 17.3001 15.6 17.8 16.6 18.5C15.5 19.3 14.3 19.7999 13 19.8999V17.1001ZM13 4.09998C14.3 4.29998 15.6 4.8 16.6 5.5C15.5 6.3 14.3 6.80002 13 6.90002V4.09998ZM4.10001 13H11V15.1001C9.1 15.3001 7.29999 16 5.89999 17.2C4.89999 16 4.30001 14.6 4.10001 13ZM18.1 17.1001C16.6 15.9001 14.8 15.2 13 15V12.8999H19.9C19.7 14.5999 19.1 16.0001 18.1 17.1001Z"
+                                                                      fill="currentColor"></path>
+															</svg>
+														</span>
+                        <!--end::Svg Icon-->
+                    </div>
+                    <!--end::Icon-->
+                    <!--begin::Section-->
+                    <div class="d-flex flex-column my-7">
+                        <!--begin::Number-->
+                        <span class="fw-semibold fs-3x text-gray-800 lh-1 ls-n2">{{ venta.count }}</span>
+                        <!--end::Number-->
+                        <!--begin::Follower-->
+                        <div class="m-0">
+                            <span class="fw-semibold fs-6 text-gray-400">Venta</span>
+                        </div>
+                        <!--end::Follower-->
+                    </div>
+
+                    <!--end::Badge-->
+                </div>
+                <!--end::Body-->
+            </div>
+            <!--end::Card widget 2-->
+        </div>
+
+
+    </div>
+
+
+
+{% endblock content %}

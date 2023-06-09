@@ -1,0 +1,143 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Expediente</title>
+    <link rel="stylesheet" href="{{ bootstrap }}">
+    <style>
+
+        @page {
+            @frame content_frame { /* Content Frame */
+            left: 50pt;
+            width: 512pt;
+            top: 60pt;
+            height: 632pt;
+        }
+
+        }
+
+        .img {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .proveedor {
+            border: 1px solid black;
+            border-radius: 25px;
+            width: 150px !important;
+            padding: 5px;
+        }
+
+        .detalles_factura {
+            border: 1px solid black;
+            border-radius: 25px;
+            float: right;
+            width: 50px;
+            padding: 5px;
+
+        }
+
+        .table-bordered {
+            border: 1px solid black;
+        }
+
+        .head {
+
+            text-transform: uppercase;
+        }
+
+        .h2 {
+            font-size: 40px;
+            text-align: center;
+        }
+
+        .h3 {
+            font-size: 30px;
+            text-align: center;
+        }
+
+        #text_center {
+            text-align: center;
+        }
+
+        #factura thead th {
+            text-align: left;
+            border-bottom: 1px solid #000000;
+            border-top: 1px solid black;
+            padding-top: 4px;
+        }
+
+        #margin_top {
+            margin-top: 5px;
+        }
+
+        #factura thead tr {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .titulo {
+            background: #9d9d9d;
+        }
+
+        #factura tbody tr {
+            padding: 0;
+        }
+
+        .text-medium {
+            font-size: 14px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<!-- Content for Static Frame 'footer_frame' -->
+
+{#<img src="{{ icon }}" alt="imagen-factura" width="150px" height="50px" style="text-align: center;">#}
+<div class="container">
+    <h2 class="h2">EXPEDIENTE DE EQUIPO</h2>
+    <div class="row">
+        <div class="proveedor col-md-4">
+            <table>
+                <tr>
+                    <th class="titulo"><p>Marca</p></th>
+                    <th class="titulo"><p>Modelo</p></th>
+                    <th class="titulo"><p>Chapa</p></th>
+                    <th class="titulo"><p>Categoria</p></th>
+                    <th class="titulo"><p>Estado</p></th>
+                    <th class="titulo" colspan="4"><p>Propiedades</p></th>
+                </tr>
+                {% for e in equipo %}
+                    <tr>
+
+                        <td><p>{{ e.marca.nombre }}</p></td>
+                        <td><p>{{ e.modelo.nombre }}</p></td>
+                        <td><p>{{ e.categoria.nombre }}</p></td>
+                        <td><p>{{ e.chapa }}</p></td>
+                        <td><p>{{ e.estado }}</p></td>
+                        {% for p in e.propiedadequipo_set.all %}
+
+                            <td><p>{{ p.propiedad.nombre }}</p></td>
+                            <td><p>{{ p.valor }}</p></td>
+
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+
+
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
