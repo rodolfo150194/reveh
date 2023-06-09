@@ -1777,7 +1777,8 @@ def perfil_usuario(request):
 
     context = {
         'title_html': 'Perfil',
-        'acciones':acciones
+        'acciones':acciones,
+        'breadcumb_lista':'Perfil'
     }
     context = KTLayout.init(context)
 
