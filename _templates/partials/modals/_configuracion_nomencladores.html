@@ -36,7 +36,7 @@
                             <div class="row">
                                 <h4 class="text-muted my-2">Nomencladores</h4>
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -79,7 +79,7 @@
                                 </div>
                                 <!--end:Col-->
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -115,7 +115,7 @@
                                 </div>
                                 <!--end:Col-->
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -145,16 +145,13 @@
                                     </div>
                                     <!--end:Menu item-->
                                 </div>
-
-
-
                             </div>
 
                             <div class="separator separator-dashed mx-5 my-5"></div>
-                        <div class="row">
+                            <div class="row">
                                 <h4 class="text-muted my-2">Categorias</h4>
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -197,7 +194,7 @@
                                 </div>
                                 <!--end:Col-->
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -233,7 +230,7 @@
                                 </div>
                                 <!--end:Col-->
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -256,7 +253,7 @@
                                                                                     <!--end::Svg Icon-->
 																				</span>
                                             <span class="d-flex flex-column">
-																					<span class="fs-6 fw-bold text-gray-800">Equipo</span>
+																					<span class="fs-6 fw-bold text-gray-800">Automóviles</span>
 																				</span>
                                         </a>
                                         <!--end:Menu link-->
@@ -265,13 +262,12 @@
                                 </div>
 
 
-
                             </div>
 
                             <div class="separator separator-dashed mx-5 my-5"></div>
                             <div class="row">
                                 <h4 class="text-muted my-2">Ocupaciones</h4>
-                            <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -303,7 +299,7 @@
                                 </div>
                                 <!--end:Col-->
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -338,7 +334,7 @@
 
                                 <!--end:Col-->
                                 <!--begin:Col-->
-                                <div class="col-lg-6 mb-3">
+                                <div class="col-lg-4 mb-3">
                                     <!--begin:Menu item-->
                                     <div class="menu-item p-0 m-0">
                                         <!--begin:Menu link-->
@@ -360,7 +356,7 @@
 																					</span>
 
 																				</span>
-                                                                                <span class="d-flex flex-column">
+                                            <span class="d-flex flex-column">
 																					<span class="fs-6 fw-bold text-gray-800">Empresa</span>
 																				</span>
                                         </a>
@@ -368,6 +364,73 @@
                                     </div>
 
                                 </div>
+                            </div>
+                            <div class="separator separator-dashed mx-5 my-5"></div>
+                            <div class="row">
+                                <h4 class="text-muted my-2">Configurando Automóviles y Partes</h4>
+                                <div class="col-lg-4 mb-3">
+                                    <!--begin:Menu item-->
+                                    <div class="menu-item p-0 m-0">
+                                        <!--begin:Menu link-->
+                                        <a href="{% url 'dashboards:lista_organismo' %}"
+                                           class="menu-link {% if 'organismo' in request.path %}active{% endif %}">
+																				<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
+																					<!--begin::Svg Icon | path: icons/duotune/graphs/gra001.svg-->
+																					<span class="svg-icon svg-icon-dark svg-icon-1">
+																						<svg width="24" height="24"
+                                                                                             viewBox="0 0 24 24"
+                                                                                             fill="none"
+                                                                                             xmlns="http://www.w3.org/2000/svg">
+																							<path opacity="0.3"
+                                                                                                  d="M14 3V21H10V3C10 2.4 10.4 2 11 2H13C13.6 2 14 2.4 14 3ZM7 14H5C4.4 14 4 14.4 4 15V21H8V15C8 14.4 7.6 14 7 14Z"
+                                                                                                  fill="currentColor"/>
+																							<path d="M21 20H20V8C20 7.4 19.6 7 19 7H17C16.4 7 16 7.4 16 8V20H3C2.4 20 2 20.4 2 21C2 21.6 2.4 22 3 22H21C21.6 22 22 21.6 22 21C22 20.4 21.6 20 21 20Z"
+                                                                                                  fill="currentColor"/>
+																						</svg>
+																					</span>
+                                                                                    <!--end::Svg Icon-->
+																				</span>
+                                            <span class="d-flex flex-column">
+																					<span class="fs-6 fw-bold text-gray-800">Partes</span>
+																				</span>
+                                        </a>
+                                        <!--end:Menu link-->
+                                    </div>
+                                    <!--end:Menu item-->
+                                </div>
+                                <!--end:Col-->
+                                <!--begin:Col-->
+                                <div class="col-lg-4 mb-3">
+                                    <!--begin:Menu item-->
+                                    <div class="menu-item p-0 m-0">
+                                        <!--begin:Menu link-->
+                                        <a href="{% url 'dashboards:lista_osde' %}"
+                                           class="menu-link {% if 'osde' in request.path %}active{% endif %}">
+																				<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
+																					<!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+																					<span class="svg-icon svg-icon-warning svg-icon-1">
+																						<svg width="24" height="24"
+                                                                                             viewBox="0 0 24 24"
+                                                                                             fill="none"
+                                                                                             xmlns="http://www.w3.org/2000/svg">
+																							<path d="M17.5 11H6.5C4 11 2 9 2 6.5C2 4 4 2 6.5 2H17.5C20 2 22 4 22 6.5C22 9 20 11 17.5 11ZM15 6.5C15 7.9 16.1 9 17.5 9C18.9 9 20 7.9 20 6.5C20 5.1 18.9 4 17.5 4C16.1 4 15 5.1 15 6.5Z"
+                                                                                                  fill="currentColor"/>
+																							<path opacity="0.3"
+                                                                                                  d="M17.5 22H6.5C4 22 2 20 2 17.5C2 15 4 13 6.5 13H17.5C20 13 22 15 22 17.5C22 20 20 22 17.5 22ZM4 17.5C4 18.9 5.1 20 6.5 20C7.9 20 9 18.9 9 17.5C9 16.1 7.9 15 6.5 15C5.1 15 4 16.1 4 17.5Z"
+                                                                                                  fill="currentColor"/>
+																						</svg>
+																					</span>
+                                                                                    <!--end::Svg Icon-->
+																				</span>
+                                            <span class="d-flex flex-column">
+																					<span class="fs-6 fw-bold text-gray-800">Automóviles</span>
+																				</span>
+                                        </a>
+                                        <!--end:Menu link-->
+                                    </div>
+                                    <!--end:Menu item-->
+                                </div>
+
                             </div>
                         </div>
 

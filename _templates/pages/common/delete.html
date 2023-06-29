@@ -60,7 +60,7 @@
                 <!--begin::Form-->
                 <form class="form" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="py-10 px-lg-17">
+                    <div class="py-10 px-lg-17 container">
                         {% csrf_token %}
                         {% if form.errors %}
                             <div class="alert alert-danger alert-dismissible ">
@@ -78,28 +78,42 @@
                             </div>
                         {% endif %}
 
-                        <div class="alert alert-danger mb-5 mt-4 p-5" role="alert">
-                            <h4 class="alert-heading">Atención</h4>
-                            <p>¿Estas seguro de eliminar el registro
-                                [{{ object.nombre }}]
-                                ?</p>
-                            <div class="border-bottom border-white opacity-20 mb-5"></div>
-                        </div>
-                    </div>
+                        <!--begin::Alert-->
+                        <div class="alert alert-danger d-flex align-items-center p-5 ">
+                            <!--begin::Icon-->
+                            <i class="bi bi-info-circle fs-2hx text-danger me-4"><span class="path1"></span><span
+                                    class="path2"></span></i>
+                            <!--end::Icon-->
 
-                    <div class="modal-footer flex-center">
-                        <!--begin::Button-->
-                        <a href="{{ url_cancel }}" class="btn btn-light me-3">Cancelar</a>
-                        <!--end::Button-->
-                        <!--begin::Button-->
-                        <button type="submit"  class="btn btn-primary">
-                            <span class="indicator-label">Submit</span>
-                            <span class="indicator-progress">Please wait...
+                            <!--begin::Wrapper-->
+                            <div class="d-flex flex-column">
+                                <!--begin::Title-->
+                                <h4 class="mb-1 text-dark">Atención</h4>
+                                <!--end::Title-->
+
+                                <!--begin::Content-->
+                                <span class="ext-gray-700 fw-bold fs-6">¿Estas seguro de eliminar el registro
+                                    [{{ object.nombre }}]
+                                    ?.</span>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Wrapper-->
+                        </div>
+                        <!--end::Alert-->
+
+                        <div class="modal-footer flex-center">
+                            <!--begin::Button-->
+                            <a href="{{ url_cancel }}" class="btn btn-light me-3">Cancelar</a>
+                            <!--end::Button-->
+                            <!--begin::Button-->
+                            <button type="submit" class="btn btn-primary">
+                                <span class="indicator-label">Submit</span>
+                                <span class="indicator-progress">Please wait...
 															<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                        <!--end::Button-->
-                    </div>
-                    <!--end::Modal footer-->
+                            </button>
+                            <!--end::Button-->
+                        </div>
+                        <!--end::Modal footer-->
                 </form>
 
                 <!--end::Form-->
@@ -108,5 +122,7 @@
         </div>
 
     </div>
+
+
 
 {% endblock %}

@@ -77,7 +77,7 @@
                        value="1"/>
             </div>
         </th>
-        <th class="min-w-125px">Nombre</th>
+        <th class="min-w-125px bold">Nombre</th>
         {% if 'categoria' in request.path %}
             <th class="min-w-125px">Propiedad</th>
         {% endif %}
@@ -98,7 +98,7 @@
             {% if 'categoria' in request.path %}
                 <th class="min-w-125px">
                 {% for prop in element.propiedad.all %}
-                    {{ prop.nombre }}{% if forloop.last %}{% else %},{% endif %}<br>
+                    <a href="{% url 'dashboards:editar_propiedad' prop.id %}">{{ prop.nombre }}</a>{% if forloop.last %}{% else %}, {% endif %}
                 {% endfor %}
                 </th>
             {% endif %}

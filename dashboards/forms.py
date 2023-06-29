@@ -8,6 +8,7 @@ class OrganismoModelForm(forms.ModelForm):
     class Meta:
         model = Organismo
         fields = '__all__'
+
         widgets = {
             'fecha_registro' : forms.HiddenInput()
         }
@@ -54,8 +55,8 @@ class MarcaModeloModelForm(forms.ModelForm):
 
 
         widgets = {
-            'marca': forms.Select(attrs={'class': 'select2'}),
-            'modelo': forms.Select(attrs={'class': 'select2'}),
+            'marca': forms.Select(attrs={'data-control':'select2','class': 'form-select form-select-solid'}),
+            'modelo': forms.Select(attrs={'data-control':'select2','class': 'form-select form-select-solid'}),
         }
 
 
@@ -72,7 +73,7 @@ class CategoriaInsumoModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'propiedad': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'}),
+            'propiedad': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class': 'form-select'}),
         }
 
 class CategoriaPiezaModelForm(forms.ModelForm):
@@ -81,7 +82,7 @@ class CategoriaPiezaModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'propiedad': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'}),
+            'propiedad': forms.SelectMultiple(attrs={ 'multiple': 'multiple','data-control':'select2','class': 'form-select'}),
         }
 
 
@@ -91,7 +92,7 @@ class CategoriaParteModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'propiedad': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'}),
+            'propiedad': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class': 'form-select'}),
         }
 
 
@@ -101,7 +102,7 @@ class CategoriaEquipoModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'propiedad': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'}),
+            'propiedad': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class': 'form-select'}),
         }
 
 
@@ -111,7 +112,7 @@ class InsumoModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'categoria': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
+            'categoria': forms.Select(attrs={'data-control':'select2', 'required': 'required','class': 'form-select'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': Textarea(
                 attrs={
@@ -119,10 +120,10 @@ class InsumoModelForm(forms.ModelForm):
                 }
             ),
             # 'marca': SelectWithPop,
-            'marca': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'modelo': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
+            'marca': forms.Select(attrs={'data-control':'select2', 'required': 'required','class': 'form-select'}),
+            'modelo': forms.Select(attrs={'data-control':'select2', 'required': 'required','class': 'form-select'}),
 
-            'propiedades': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'})
+            'propiedades': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class': 'form-select'})
             # 'modelo': forms.Select(attrs={'class': 'select2 '})
         }
 
@@ -145,8 +146,8 @@ class PiezaModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'categoria': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'insumo': forms.SelectMultiple(attrs={'class': 'select2 ', 'multiple': 'multiple'}),
+            'categoria': forms.Select(attrs={'data-control':'select2', 'required': 'required','class': 'form-select'}),
+            'insumo': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class': 'form-select'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': Textarea(
                 attrs={
@@ -154,9 +155,9 @@ class PiezaModelForm(forms.ModelForm):
                 }
             ),
             # 'marca': SelectWithPop,
-            'modelo': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'marca': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'propiedades': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'})
+            'modelo': forms.Select(attrs={'class': 'form-select', 'required': 'required','data-control':'select2'}),
+            'marca': forms.Select(attrs={'class': 'form-select', 'required': 'required','data-control':'select2'}),
+            'propiedades': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'})
             # 'modelo': forms.Select(attrs={'class': 'select2 '})
         }
 
@@ -179,18 +180,18 @@ class ParteModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'categoria': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'insumo': forms.SelectMultiple(attrs={'class': 'select2 ', 'multiple': 'multiple'}),
+            'categoria': forms.Select(attrs={'data-control':'select2', 'required': 'required','class':'form-select'}),
+            'insumo': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': Textarea(
                 attrs={
                     'class': 'form-control', 'rows': 3, 'cols': 2
                 }
             ),
-            'marca': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'modelo': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'piezas': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'}),
-            'propiedades': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'})
+            'marca': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'modelo': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'piezas': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'}),
+            'propiedades': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'})
             # 'piezas': SelectMultipleWithPop
         }
 
@@ -213,17 +214,19 @@ class EquipoModelForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'categoria': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
+            'categoria': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'estado': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': Textarea(
                 attrs={
                     'class': 'form-control', 'rows': 3, 'cols': 2
                 }
             ),
-            'marca': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'modelo': forms.Select(attrs={'class': 'select2 ', 'required': 'required'}),
-            'partes': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'}),
-            'propiedades': forms.SelectMultiple(attrs={'class': 'select2', 'multiple': 'multiple'})
+            'marca': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'modelo': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'partes': forms.SelectMultiple(attrs={'class':'select2','data-control':'select2', 'multiple': 'multiple'}),
+            'propiedades': forms.SelectMultiple(attrs={'class':'select2','data-control':'select2', 'multiple': 'multiple'}),
+            'empresa': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'})
             # 'partes': SelectMultipleWithPop
         }
 

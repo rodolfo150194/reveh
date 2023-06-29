@@ -373,23 +373,23 @@ class Equipo(models.Model):
     )
     history = AuditlogHistoryField()
     empresa = models.ForeignKey(Empresa, verbose_name='Empresa', on_delete=models.PROTECT)
+    codigo = models.CharField(verbose_name='Codigo', max_length=50,null=True)
     categoria = models.ForeignKey(CategoriaEquipo, verbose_name='Categoria', on_delete=models.PROTECT)
-    nombre = models.CharField(verbose_name='Nombre', max_length=50)
     marca = models.ForeignKey(Marca, verbose_name='Marca', on_delete=models.PROTECT)
     modelo = models.ForeignKey(Modelo, verbose_name='Modelo', on_delete=models.PROTECT)
     chapa = models.CharField(verbose_name='Chapa', max_length=7, null=True, blank=True, unique=True)
     descripcion = models.TextField(verbose_name='Descripción', null=True, blank=True)
     propiedades = models.ManyToManyField(Propiedad, verbose_name='Propiedad', blank=True, through='PropiedadEquipo')
     partes = models.ManyToManyField(Parte, verbose_name='Parte', blank=True)
-    estado = models.CharField(max_length=11, choices=ESTADO_CHOICES)
-    foto = models.ImageField(upload_to='Equipo/', null=True, blank=True)
+    estado = models.CharField(verbose_name='Estado',max_length=11, choices=ESTADO_CHOICES)
+    foto = models.ImageField(verbose_name='Imagenes',upload_to='Equipo/', null=True, blank=True)
     fecha_registro = models.DateField(auto_now_add=True,null=True,blank=True)
 
     class Meta:
         db_table = 'equipo'
         verbose_name = 'Equipo'
         verbose_name_plural = 'Equipos'
-        ordering = ['categoria', 'nombre']
+        ordering = ['categoria', 'marca']
 
     def __str__(self):
         return self.marca.nombre +' - '+ self.modelo.nombre
@@ -400,14 +400,6 @@ class Equipo(models.Model):
         else:
             return '{}{}'.format(STATIC_URL, 'media/empty.jpg')
 
-    # def clean(self):
-    #     self.chapa = self.chapa.upper()
-    #
-    #     if not self.chapa[0].isalpha():
-    #         raise ValidationError("El primer caracter de la chapa debe ser una letra")
-    #
-    #     if not self.chapa[1:].isdigit():
-    #         raise ValidationError("Los siguientes 6 caracteres deben ser dígitos")
 
 auditlog.register(Equipo)
 
