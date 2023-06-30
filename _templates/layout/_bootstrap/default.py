@@ -22,7 +22,7 @@ class KTBootstrapDefault:
         KTBootstrapDefault.initDarkSidebarLayout(context)
 
         # 3) Dark header layout (default_header_layout.html)
-        #KTBootstrapDefault.initDarkHeaderLayout(context)
+        KTBootstrapDefault.initDarkHeaderLayout(context)
 
         # 4) Light header layout (default_header_layout.html)
         #KTBootstrapDefault.initLightHeaderLayout(context)

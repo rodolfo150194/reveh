@@ -98,7 +98,7 @@ urlpatterns = [
     #Reporte
     path('reporte/equipo', reporte_equipo, name='reporte_equipo'),
 
-    # path('error', DashboardsView.as_view(template_name = 'non-exist-file.html'), name='Error Page'),
+    path('error/permisos', error, name='error'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

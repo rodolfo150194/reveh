@@ -4,14 +4,16 @@ import os
 from _decimal import Decimal
 from auditlog.models import LogEntry
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Count, Q
 from django.forms import modelformset_factory
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import get_template
 from django.utils.dateparse import parse_date
 from django.utils.decorators import method_decorator
+from django.views.defaults import permission_denied
 from django.views.generic import View, TemplateView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
@@ -34,42 +36,40 @@ Refer to dashboards/urls.py file for more pages.
 
 @login_required
 def Inicio(request, **kwargs):
-    layout = 'layout/default.html'
     top_3_equipo = []
     top_4_equipo_empresa = []
     today = datetime.date.today()
     month = today.month
     year = today.year
     equipos_por_categoria = []
-    equipos = Equipo.objects.all()
     partes = Parte.objects.all()
     piezas = Pieza.objects.all()
-    activos  = Equipo.objects.filter(estado='Activo')
-    venta  = Equipo.objects.filter(estado='Venta')
-    reparacion  = Equipo.objects.filter(estado='Reparación')
+    activos = Equipo.objects.filter(estado__nombre='Activo')
+    venta = Equipo.objects.filter(estado__nombre='Venta')
+    reparacion = Equipo.objects.filter(estado__nombre='Reparación')
     equipos = Equipo.objects.all()
-    equipos_venta = Equipo.objects.filter(estado='Venta')
-    equipos_venta_ultimo_mes = Equipo.objects.filter(estado='Venta',fecha_registro__month=month)
-    equipos_reparacion = Equipo.objects.filter(estado='Reparación')
+    equipos_venta = Equipo.objects.filter(estado__nombre='Venta')
+    equipos_venta_ultimo_mes = Equipo.objects.filter(estado__nombre='Venta', fecha_registro__month=month)
+    equipos_reparacion = Equipo.objects.filter(estado__nombre='Reparación')
 
     for categoria in CategoriaEquipo.objects.all():
         equipos_cat = Equipo.objects.filter(categoria=categoria).order_by('-fecha_registro')
         if equipos_cat:
-            equipos_por_categoria.append({'categoria':categoria,'equipos_cat':equipos_cat})
+            equipos_por_categoria.append({'categoria': categoria, 'equipos_cat': equipos_cat})
 
-
-    top_3_equipo_por_marca = Marca.objects.annotate(cant_equipos = Count('equipo')).order_by('-cant_equipos')[:3]
-    top_4_equipo_por_empresa = Empresa.objects.annotate(cant_equipos = Count('equipo')).order_by('-cant_equipos')[:4]
+    top_3_equipo_por_marca = Marca.objects.annotate(cant_equipos=Count('equipo')).order_by('-cant_equipos')[:3]
+    top_4_equipo_por_empresa = Empresa.objects.annotate(cant_equipos=Count('equipo')).order_by('-cant_equipos')[:4]
 
     for equipo in top_3_equipo_por_marca:
-        top_3_equipo.append({'marca':equipo.nombre,'cant':equipo.cant_equipos})
+        top_3_equipo.append({'marca': equipo.nombre, 'cant': equipo.cant_equipos})
 
     for empresa in top_4_equipo_por_empresa:
-        top_4_equipo_empresa.append({'empresa':empresa.nombre,'cant':equipo.cant_equipos})
+        top_4_equipo_empresa.append({'empresa': empresa.nombre, 'cant': equipo.cant_equipos})
 
-    #crecimiento mensual de registro de equipos
-    cantidad_actual = Equipo.objects.filter(fecha_registro__month=month-1, fecha_registro__year=year).count()
-    cantidad_actual_venta = Equipo.objects.filter(estado='Venta', fecha_registro__month=month-1, fecha_registro__year=year).count()
+    # crecimiento mensual de registro de equipos
+    cantidad_actual = Equipo.objects.filter(fecha_registro__month=month - 1, fecha_registro__year=year).count()
+    cantidad_actual_venta = Equipo.objects.filter(estado__nombre='Venta', fecha_registro__month=month - 1,
+                                                  fecha_registro__year=year).count()
 
     mes_anterior = month - 2
     anno_anterior = year
@@ -77,35 +77,45 @@ def Inicio(request, **kwargs):
         mes_anterior = 12
         anno_anterior = year - 1
 
-    previous_count = Equipo.objects.filter(fecha_registro__month=mes_anterior,fecha_registro__year=anno_anterior).count()
-    previous_count_venta = Equipo.objects.filter(estado='Venta',fecha_registro__month=mes_anterior,fecha_registro__year=anno_anterior).count()
+    previous_count = Equipo.objects.filter(fecha_registro__month=mes_anterior,
+                                           fecha_registro__year=anno_anterior).count()
+    previous_count_venta = Equipo.objects.filter(estado__nombre='Venta', fecha_registro__month=mes_anterior,
+                                                 fecha_registro__year=anno_anterior).count()
     if previous_count != 0:
         porciento_crecimiento_mensual = Decimal((cantidad_actual - previous_count) / previous_count) * 100
-        porciento_crecimiento_mensual_venta = Decimal((cantidad_actual_venta - previous_count_venta) / previous_count_venta) * 100
+        porciento_crecimiento_mensual_venta = Decimal(
+            (cantidad_actual_venta - previous_count_venta) / previous_count_venta) * 100
     else:
         porciento_crecimiento_mensual = Decimal((cantidad_actual - previous_count)) * 100
-        porciento_crecimiento_mensual_venta = Decimal((cantidad_actual_venta - previous_count_venta) ) * 100
+        porciento_crecimiento_mensual_venta = Decimal((cantidad_actual_venta - previous_count_venta)) * 100
+        if equipos_venta.count() == 0:
+            porciento = 0
+        else:
+            porciento = (equipos_venta.count() / equipos.count()) * 100
+
+
 
     context = {
-        'equipos':equipos,
-        'equipos_venta':{'equipos_venta':equipos_venta,'porciento':(equipos_venta.count()/equipos.count())*100},
-        'equipos_venta_ultimo_mes':equipos_venta_ultimo_mes,
-        'equipos_reparacion':equipos_reparacion,
-        'top_3_equipo':top_3_equipo,
-        'layout':layout,
-        'activos':activos,
-        'reparacion':reparacion,
-        'venta':venta,
-        'partes':partes,
-        'piezas':piezas,
-        'top_4_equipo_empresa':top_4_equipo_empresa,
-        'equipos_por_categoria':equipos_por_categoria,
-        'porciento_crecimiento_mensual':porciento_crecimiento_mensual,
-        'porciento_crecimiento_mensual_venta':porciento_crecimiento_mensual_venta
+        'equipos': equipos,
+        'equipos_venta': {'equipos_venta': equipos_venta, 'porciento': porciento},
+        'equipos_venta_ultimo_mes': equipos_venta_ultimo_mes,
+        'equipos_reparacion': equipos_reparacion,
+        'top_3_equipo': top_3_equipo,
+        'layout': 'layout/default.html',
+        'activos': activos,
+        'reparacion': reparacion,
+        'venta': venta,
+        'partes': partes,
+        'piezas': piezas,
+        'top_4_equipo_empresa': top_4_equipo_empresa,
+        'equipos_por_categoria': equipos_por_categoria,
+        'porciento_crecimiento_mensual': porciento_crecimiento_mensual,
+        'porciento_crecimiento_mensual_venta': porciento_crecimiento_mensual_venta
     }
     context = KTLayout.init(context)
 
     return render(request, "pages/dashboards/index.html", context)
+
 
 def ExistePropiedadPieza(id_pieza, id_propiedad):
     if PropiedadPieza.objects.filter(pieza_id=id_pieza, propiedad_id=id_propiedad):
@@ -140,26 +150,26 @@ def ExistePropiedadEquipo(id_equipo, id_propiedad):
 ###################################################
 @login_required()
 def lista_organismo(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_organismo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Organismo.objects.all()
-    crear_url = reverse('dashboards:create_organismo')
-    title_html = 'Organismos'
     dict_object_list = {}
-    variables_filtro = ['nombre']
-    layout = 'layout/default.html'
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_organismo", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_organismo", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
-
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
-        'variables_filtro': variables_filtro,
+        'title_html': 'Organismos',
+        'crear_url': reverse('dashboards:create_organismo'),
         'nombre_tabla': 'organismo',
-        'layout':layout,
+        'layout': 'layout/default.html',
         'breadcumb_lista': 'Organismo',
         'encabezado_pagina': 'Organismos',
     }
@@ -170,53 +180,56 @@ def lista_organismo(request, **kwargs):
 
 @login_required
 def create_organismo(request):
-    title_html = 'Organismo'
-    url_cancel = reverse('dashboards:lista_organismo')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_organismo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
     if request.POST:
         form = OrganismoModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_organismo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_organismo'), {'layout': 'layout/default.html'})
     else:
         form = OrganismoModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Organismo',
+            'url_cancel': reverse('dashboards:lista_organismo'),
             'form': form,
             'breadcumb_lista': 'Nueva Organismo',
             'encabezado_pagina': 'Organismos',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
-    return render(request, 'pages/common/create_update.html',
-                  context)
+    return render(request, 'pages/common/create_update.html',context)
 
 
 @login_required
 def editar_organismo(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_organismo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Organismo'
-    url_cancel = reverse('dashboards:lista_organismo')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(Organismo, pk=pk)
     if request.POST:
         form = OrganismoModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_organismo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_organismo'), {'layout': 'layout/default.html'})
     else:
         form = OrganismoModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Organismo',
+            'url_cancel': reverse('dashboards:lista_organismo'),
             'form': form,
-            'breadcumb_lista': 'Editar Organismo [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Organismo [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Organismos',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -226,46 +239,54 @@ def editar_organismo(request, pk):
 
 @login_required
 def eliminar_organismo(request, pk):
-    url_cancel = reverse('dashboards:lista_organismo')
-    title_html = 'Organismo'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_organismo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Organismo, pk=pk)
     if request.POST:
         object = get_object_or_404(Organismo, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_organismo'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_organismo'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Organismo',
+        'url_cancel': reverse('dashboards:lista_organismo'),
         'breadcumb_lista': 'Eliminar Organismo [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Organismos',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud Osde                  ####
 ###################################################
 @login_required()
 def lista_osde(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_osde'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Osde.objects.all()
-    crear_url = reverse('dashboards:create_osde')
-    title_html = 'Osde'
     dict_object_list = {}
     variables_filtro = ['nombre']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_osde", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_osde", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Osde',
+        'crear_url': reverse('dashboards:create_osde'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'osde',
         'breadcumb_lista': 'Osde',
@@ -279,53 +300,56 @@ def lista_osde(request, **kwargs):
 
 @login_required
 def create_osde(request):
-    title_html = 'Osde'
-    url_cancel = reverse('dashboards:lista_osde')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_osde'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
     if request.POST:
         form = OsdeModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_osde'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_osde'), {'layout': 'layout/default.html'})
     else:
         form = OsdeModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Osde',
+            'url_cancel': reverse('dashboards:lista_osde'),
             'form': form,
             'breadcumb_lista': 'Nueva Osde',
             'encabezado_pagina': 'Osde',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
-    return render(request, 'pages/common/create_update.html',
-                  context)
+    return render(request, 'pages/common/create_update.html',context)
 
 
 @login_required
 def editar_osde(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_osde'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Osde'
-    url_cancel = reverse('dashboards:lista_osde')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(Osde, pk=pk)
     if request.POST:
         form = OsdeModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_osde'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_osde'), {'layout': 'layout/default.html'})
     else:
         form = OsdeModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Osde',
+            'url_cancel': reverse('dashboards:lista_osde'),
             'form': form,
-            'breadcumb_lista': 'Editar Osde [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Osde [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Osde',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -335,46 +359,54 @@ def editar_osde(request, pk):
 
 @login_required
 def eliminar_osde(request, pk):
-    url_cancel = reverse('dashboards:lista_osde')
-    title_html = 'Osde'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.hgroups.filter(permissions__codename='delete_osde'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Osde, pk=pk)
     if request.POST:
         object = get_object_or_404(Osde, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_osde'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_osde'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Osde',
+        'url_cancel': reverse('dashboards:lista_osde'),
         'breadcumb_lista': 'Eliminar Osde [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Osde',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud Empresa               ####
 ###################################################
 @login_required()
 def lista_empresa(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_empresa'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Empresa.objects.all()
-    crear_url = reverse('dashboards:create_empresa')
-    title_html = 'Empresa'
     dict_object_list = {}
     variables_filtro = ['nombre']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_empresa", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_empresa", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Empresa',
+        'crear_url': reverse('dashboards:create_empresa'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'empresa',
         'breadcumb_lista': 'Empresa',
@@ -388,25 +420,27 @@ def lista_empresa(request, **kwargs):
 
 @login_required
 def create_empresa(request):
-    title_html = 'Empresa'
-    url_cancel = reverse('dashboards:lista_empresa')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_empresa'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
     if request.POST:
         form = EmpresaModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_empresa'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_empresa'), {'layout': 'layout/default.html'})
     else:
         form = EmpresaModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Empresa',
+            'url_cancel': reverse('dashboards:lista_empresa'),
             'form': form,
             'breadcumb_lista': 'Nueva Empresa',
             'encabezado_pagina': 'Empresa',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
     return render(request, 'pages/common/create_update.html',
                   context)
@@ -414,27 +448,29 @@ def create_empresa(request):
 
 @login_required
 def editar_empresa(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_empresa'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Empresa'
-    url_cancel = reverse('dashboards:lista_empresa')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(Empresa, pk=pk)
     if request.POST:
         form = EmpresaModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_empresa'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_empresa'), {'layout': 'layout/default.html'})
     else:
         form = EmpresaModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Empresa',
+            'url_cancel': reverse('dashboards:lista_empresa'),
             'form': form,
-            'breadcumb_lista': 'Editar Empresa [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Empresa [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Empresa',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -444,46 +480,54 @@ def editar_empresa(request, pk):
 
 @login_required
 def eliminar_empresa(request, pk):
-    url_cancel = reverse('dashboards:lista_empresa')
-    title_html = 'Empresa'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_empresa'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Empresa, pk=pk)
     if request.POST:
         object = get_object_or_404(Empresa, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_empresa'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_empresa'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Empresa',
+        'url_cancel': reverse('dashboards:lista_empresa'),
         'breadcumb_lista': 'Eliminar Empresa [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Empresa',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud CategoriaPieza        ####
 ###################################################
 @login_required()
 def lista_categoriapieza(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_categoriapieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = CategoriaPieza.objects.all()
-    crear_url = reverse('dashboards:create_categoriapieza')
-    title_html = 'Categoria Pieza'
     dict_object_list = {}
     variables_filtro = ['nombre']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_categoriapieza", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_categoriapieza", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Categoria Pieza',
+        'crear_url': reverse('dashboards:create_categoriapieza'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'categoriapieza',
         'breadcumb_lista': 'Categoria Pieza',
@@ -497,25 +541,27 @@ def lista_categoriapieza(request, **kwargs):
 
 @login_required
 def create_categoriapieza(request):
-    title_html = 'Categoria Parte'
-    url_cancel = reverse('dashboards:lista_categoriapieza')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_categoriapieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
     if request.POST:
         form = CategoriaPiezaModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_categoriapieza'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_categoriapieza'), {'layout': 'layout/default.html'})
     else:
         form = CategoriaPiezaModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Categoria Pieza',
+            'url_cancel': reverse('dashboards:lista_categoriapieza'),
             'form': form,
             'breadcumb_lista': 'Nueva Categoria Pieza',
             'encabezado_pagina': 'Categoria Pieza',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
     return render(request, 'pages/common/create_update.html',
                   context)
@@ -523,27 +569,29 @@ def create_categoriapieza(request):
 
 @login_required
 def editar_categoriapieza(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_categoriapieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Empresa'
-    url_cancel = reverse('dashboards:lista_categoriapieza')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(Empresa, pk=pk)
     if request.POST:
         form = CategoriaPiezaModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_categoriapieza'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_categoriapieza'), {'layout': 'layout/default.html'})
     else:
         form = CategoriaPiezaModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Categoria Pieza',
+            'url_cancel': reverse('dashboards:lista_categoriapieza'),
             'form': form,
-            'breadcumb_lista': 'Editar Categoria Pieza [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Categoria Pieza [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Categoria Pieza',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -553,46 +601,54 @@ def editar_categoriapieza(request, pk):
 
 @login_required
 def eliminar_categoriapieza(request, pk):
-    url_cancel = reverse('dashboards:lista_categoriapieza')
-    title_html = 'Categoria Pieza'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_categoriapieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(CategoriaPieza, pk=pk)
     if request.POST:
         object = get_object_or_404(CategoriaPieza, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_categoriapieza'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_categoriapieza'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Categoria Pieza',
+        'url_cancel': reverse('dashboards:lista_categoriapieza'),
         'breadcumb_lista': 'Eliminar Categoria Pieza [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Categoria Piezas',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud CategoriaParte        ####
 ###################################################
 @login_required()
 def lista_categoriaparte(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_categoriaparte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = CategoriaParte.objects.all()
-    crear_url = reverse('dashboards:create_categoriaparte')
-    title_html = 'Categoria Parte'
     dict_object_list = {}
     variables_filtro = ['nombre']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_categoriaparte", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_categoriaparte", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Categoria Parte',
+        'crear_url': reverse('dashboards:create_categoriaparte'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'categoriaparte',
         'breadcumb_lista': 'Categoria Parte',
@@ -606,25 +662,28 @@ def lista_categoriaparte(request, **kwargs):
 
 @login_required
 def create_categoriaparte(request):
-    title_html = 'Categoria Parte'
-    url_cancel = reverse('dashboards:lista_categoriaparte')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_categoriaparte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
 
     if request.POST:
         form = CategoriaParteModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_categoriaparte'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_categoriaparte'), {'layout': 'layout/default.html'})
     else:
         form = CategoriaParteModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Categoria Parte',
+            'url_cancel': reverse('dashboards:lista_categoriaparte'),
             'form': form,
             'breadcumb_lista': 'Nueva Categoria Parte',
             'encabezado_pagina': 'Categoria Parte',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
     return render(request, 'pages/common/create_update.html',
                   context)
@@ -632,27 +691,29 @@ def create_categoriaparte(request):
 
 @login_required
 def editar_categoriaparte(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_categoriaparte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Categoria Parte'
-    url_cancel = reverse('dashboards:lista_categoriaparte')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(CategoriaParte, pk=pk)
     if request.POST:
         form = CategoriaParteModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_categoriaparte'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_categoriaparte'), {'layout': 'layout/default.html'})
     else:
         form = CategoriaParteModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Categoria Parte',
+            'url_cancel': reverse('dashboards:lista_categoriaparte'),
             'form': form,
-            'breadcumb_lista': 'Editar Categoria Parte [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Categoria Parte [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Categoria Parte',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -662,46 +723,55 @@ def editar_categoriaparte(request, pk):
 
 @login_required
 def eliminar_categoriaparte(request, pk):
-    url_cancel = reverse('dashboards:lista_categoriaparte')
-    title_html = 'Categoria Parte'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_categoriaparte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(CategoriaParte, pk=pk)
     if request.POST:
         object = get_object_or_404(CategoriaParte, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_categoriaparte'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_categoriaparte'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Categoria Parte',
+        'url_cancel': reverse('dashboards:lista_categoriaparte'),
         'breadcumb_lista': 'Eliminar Categoria Parte [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Categoria Partes',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud Categoria Equipo        ####
 ###################################################
 @login_required()
 def lista_categoriaequipo(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_categoriaequipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = CategoriaEquipo.objects.all()
-    crear_url = reverse('dashboards:create_categoriaequipo')
-    title_html = 'Categoria Equipo'
+
     dict_object_list = {}
     variables_filtro = ['nombre']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_categoriaequipo", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_categoriaequipo", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Categoria Equipo',
+        'crear_url': reverse('dashboards:create_categoriaequipo'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'categoriaequipo',
         'breadcumb_lista': 'Categoria Equipo',
@@ -715,25 +785,27 @@ def lista_categoriaequipo(request, **kwargs):
 
 @login_required
 def create_categoriaequipo(request):
-    title_html = 'Categoria Equipo'
-    url_cancel = reverse('dashboards:lista_categoriaequipo')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_categoriaequipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
     if request.POST:
         form = CategoriaEquipoModelForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_categoriaequipo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_categoriaequipo'), {'layout': 'layout/default.html'})
     else:
         form = CategoriaEquipoModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Categoria Equipo',
+            'url_cancel': reverse('dashboards:lista_categoriaequipo'),
             'form': form,
             'breadcumb_lista': 'Nueva Categoria Equipo',
             'encabezado_pagina': 'Categoria Equipo',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
     return render(request, 'pages/common/create_update.html',
                   context)
@@ -741,27 +813,29 @@ def create_categoriaequipo(request):
 
 @login_required
 def editar_categoriaequipo(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_categoriaequipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Categoria Equipo'
-    url_cancel = reverse('dashboards:lista_categoriaequipo')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(CategoriaEquipo, pk=pk)
     if request.POST:
         form = CategoriaEquipoModelForm(request.POST, request.FILES, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_categoriaequipo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_categoriaequipo'), {'layout': 'layout/default.html'})
     else:
         form = CategoriaEquipoModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Categoria Equipo',
+            'url_cancel': reverse('dashboards:lista_categoriaequipo'),
             'form': form,
-            'breadcumb_lista': 'Editar Categoria Equipo [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Categoria Equipo [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Categoria Equipo',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -771,46 +845,54 @@ def editar_categoriaequipo(request, pk):
 
 @login_required
 def eliminar_categoriaequipo(request, pk):
-    url_cancel = reverse('dashboards:lista_categoriaequipo')
-    title_html = 'Categoria Equipo'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_categoriaequipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(CategoriaEquipo, pk=pk)
     if request.POST:
         object = get_object_or_404(CategoriaEquipo, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_categoriaequipo'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_categoriaequipo'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Categoria Equipo',
+        'url_cancel': reverse('dashboards:lista_categoriaequipo'),
         'breadcumb_lista': 'Eliminar Categoria Equipo [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Categoria Equipos',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud Marca                 ####
 ###################################################
 @login_required()
 def lista_marca(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_marca'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Marca.objects.all()
-    crear_url = reverse('dashboards:create_marca')
-    title_html = 'Marcas'
     dict_object_list = {}
     variables_filtro = ['nombre']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_marca", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_marca", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Marcas',
+        'crear_url': reverse('dashboards:create_marca'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'marca',
         'breadcumb_lista': 'Marca',
@@ -824,25 +906,28 @@ def lista_marca(request, **kwargs):
 
 @login_required
 def create_marca(request):
-    title_html = 'Marca'
-    url_cancel = reverse('dashboards:lista_marca')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_marca'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
 
     if request.POST:
         form = MarcaModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_marca'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_marca'), {'layout': 'layout/default.html'})
     else:
         form = MarcaModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Marca',
+            'url_cancel': reverse('dashboards:lista_marca'),
             'form': form,
             'breadcumb_lista': 'Nueva Marca',
             'encabezado_pagina': 'Marcas',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
     KTTheme.addJavascriptFile('../assets/js/kt_table.js')
     return render(request, 'pages/common/create_update.html',
@@ -851,27 +936,29 @@ def create_marca(request):
 
 @login_required
 def editar_marca(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='add_marca'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Marca'
-    url_cancel = reverse('dashboards:lista_marca')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(Marca, pk=pk)
     if request.POST:
         form = MarcaModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_marca'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_marca'), {'layout': 'layout/default.html'})
     else:
         form = MarcaModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Marca',
+            'url_cancel': reverse('dashboards:lista_marca'),
             'form': form,
-            'breadcumb_lista': 'Editar Marca [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Marca [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Marcas',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -881,46 +968,54 @@ def editar_marca(request, pk):
 
 @login_required
 def eliminar_marca(request, pk):
-    url_cancel = reverse('dashboards:lista_marca')
-    title_html = 'Marca'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_marca'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Marca, pk=pk)
     if request.POST:
         object = get_object_or_404(Marca, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_marca'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_marca'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Marca',
+        'url_cancel': reverse('dashboards:lista_marca'),
         'breadcumb_lista': 'Eliminar Marca [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Marcas',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud Modelo                 ###
 ###################################################
 @login_required()
 def lista_modelo(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_modelo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Modelo.objects.all()
-    crear_url = reverse('dashboards:create_modelo')
-    title_html = 'Modelos'
     nombre_tabla = 'modelo'
     dict_object_list = {}
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_modelo", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_modelo", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Modelos',
+        'crear_url': reverse('dashboards:create_modelo'),
         'nombre_tabla': nombre_tabla,
         'breadcumb_lista': 'Modelos',
         'encabezado_pagina': 'Modelos',
@@ -930,27 +1025,30 @@ def lista_modelo(request, **kwargs):
     KTTheme.addJavascriptFile('../assets/js/messaje.js')
     return render(request, 'pages/common/list.html', context)
 
+
 @login_required
 def create_modelo(request):
-    title_html = 'Modelo'
-    url_cancel = reverse('dashboards:lista_modelo')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_modelo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
     if request.POST:
         form = ModeloModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_modelo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_modelo'), {'layout': 'layout/default.html'})
     else:
         form = ModeloModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Modelo',
+            'url_cancel': reverse('dashboards:lista_modelo'),
             'form': form,
             'breadcumb_lista': 'Nueva Modelo',
             'encabezado_pagina': 'Modelos',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
     return render(request, 'pages/common/create_update.html',
                   context)
@@ -958,27 +1056,29 @@ def create_modelo(request):
 
 @login_required
 def editar_modelo(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_modelo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Modelo'
-    url_cancel = reverse('dashboards:lista_modelo')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(Modelo, pk=pk)
     if request.POST:
         form = ModeloModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_modelo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_modelo'), {'layout': 'layout/default.html'})
     else:
         form = ModeloModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Modelo',
+            'url_cancel': reverse('dashboards:lista_modelo'),
             'form': form,
-            'breadcumb_lista': 'Editar Modelo [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Modelo [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Modelos',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -988,46 +1088,54 @@ def editar_modelo(request, pk):
 
 @login_required
 def eliminar_modelo(request, pk):
-    url_cancel = reverse('dashboards:lista_modelo')
-    title_html = 'Marca'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_modelo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Modelo, pk=pk)
     if request.POST:
         object = get_object_or_404(Modelo, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_modelo'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_modelo'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Marca',
+        'url_cancel': reverse('dashboards:lista_modelo'),
         'breadcumb_lista': 'Eliminar Modelo [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Modelos',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud Propiedad             ####
 ###################################################
 @login_required()
 def lista_propiedad(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_propiedad'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Propiedad.objects.all()
-    crear_url = reverse('dashboards:create_propiedad')
-    title_html = 'Propiedades'
     dict_object_list = {}
     variables_filtro = ['nombre']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_propiedad", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_propiedad", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Propiedades',
+        'crear_url': reverse('dashboards:create_propiedad'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'propiedad',
         'breadcumb_lista': 'Propiedad',
@@ -1041,25 +1149,28 @@ def lista_propiedad(request, **kwargs):
 
 @login_required
 def create_propiedad(request):
-    title_html = 'Propiedad'
-    url_cancel = reverse('dashboards:lista_propiedad')
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='add_propiedad'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
 
     if request.POST:
         form = PropiedadModelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_propiedad'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_propiedad'), {'layout': 'layout/default.html'})
     else:
         form = PropiedadModelForm()
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Propiedad',
+            'url_cancel': reverse('dashboards:lista_propiedad'),
             'form': form,
             'breadcumb_lista': 'Nueva Propiedad',
             'encabezado_pagina': 'Propiedades',
-            'layout':layout
+            'layout': 'layout/default.html'
         }
     return render(request, 'pages/common/create_update.html',
                   context)
@@ -1067,27 +1178,29 @@ def create_propiedad(request):
 
 @login_required
 def editar_propiedad(request, pk):
+    try:
+        if not request.user.groups.filter(permissions__codename='change_propiedad'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    title_html = 'Propiedad'
-    url_cancel = reverse('dashboards:lista_propiedad')
-    layout = 'layout/default.html'
     object_pk = get_object_or_404(Propiedad, pk=pk)
     if request.POST:
         form = PropiedadModelForm(request.POST, instance=object_pk)
         if form.is_valid():
             form.save()
             messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
-            return HttpResponseRedirect(reverse('dashboards:lista_propiedad'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_propiedad'), {'layout': 'layout/default.html'})
     else:
         form = PropiedadModelForm(instance=object_pk)
         context = {
-            'title_html': title_html,
-            'url_cancel': url_cancel,
+            'title_html': 'Propiedad',
+            'url_cancel': reverse('dashboards:lista_propiedad'),
             'form': form,
-            'breadcumb_lista': 'Editar Propiedad [ '+ object_pk.nombre+' ]',
+            'breadcumb_lista': 'Editar Propiedad [ ' + object_pk.nombre + ' ]',
             'encabezado_pagina': 'Propiedades',
             'object_pk': object_pk,
-            'layout': layout
+            'layout': 'layout/default.html'
         }
     # if request.path == reverse("marca_crear_popup"):
     #     return render(request, 'add/popadd.html', {'form': form, 'url_cancel': url_cancel})
@@ -1097,25 +1210,29 @@ def editar_propiedad(request, pk):
 
 @login_required
 def eliminar_propiedad(request, pk):
-    url_cancel = reverse('dashboards:lista_propiedad')
-    title_html = 'Propiedad'
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_propiedad'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Propiedad, pk=pk)
     if request.POST:
         object = get_object_or_404(Propiedad, pk=pk)
         object.delete()
 
         messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
-        return HttpResponseRedirect(reverse('dashboards:lista_propiedad'), {'layout':layout})
+        return HttpResponseRedirect(reverse('dashboards:lista_propiedad'), {'layout': 'layout/default.html'})
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Propiedad',
+        'url_cancel': reverse('dashboards:lista_propiedad'),
         'breadcumb_lista': 'Eliminar Propiedad [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Propiedades',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
+
 
 ###################################################
 ####                Crud Pieza                 ###
@@ -1123,21 +1240,24 @@ def eliminar_propiedad(request, pk):
 
 @login_required()
 def lista_pieza(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_pieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Pieza.objects.all()
-    crear_url = reverse('dashboards:crear_pieza')
-    title_html = 'Piezas'
     dict_object_list = {}
-    variables_filtro = ['marca', 'modelo', 'empresa', 'organismo', 'osde', 'estado']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_pieza", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_pieza", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar,'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Piezas',
+        'crear_url': reverse('dashboards:crear_pieza'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'pieza',
         'breadcumb_lista': 'Piezas',
@@ -1148,11 +1268,15 @@ def lista_pieza(request, **kwargs):
     KTTheme.addJavascriptFile('../assets/js/message.js')
     return render(request, 'pages/equipo/list.html', context)
 
+
 @login_required
 def crear_pieza(request):
-    title_html = 'Pieza'
-    layout = 'layout/default.html'
-    url_cancel = reverse('dashboards:lista_pieza')
+    try:
+        if not request.user.groups.filter(permissions__codename='add_pieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     if request.POST:
         form = PiezaModelForm(request.POST, request.FILES)
         if form.is_valid():
@@ -1171,26 +1295,30 @@ def crear_pieza(request):
                                                                 modelo=form.cleaned_data['modelo'])
                 mm.pieza = True
                 mm.save()
-                messages.success(request,'El elemento ha sido creado satisfactoriamente')
-                return HttpResponseRedirect(reverse('dashboards:pieza_propiedad', args=[pieza.id]),{'layout':layout})
+                messages.success(request, 'El elemento ha sido creado satisfactoriamente')
+                return HttpResponseRedirect(reverse('dashboards:pieza_propiedad', args=[pieza.id]), {'layout': 'layout/default.html'})
     else:
         form = PiezaModelForm()
 
     return render(request, 'pages/equipo/create_update_equipo.html',
-                  {'title_html': title_html,
-            'url_cancel': url_cancel,
-            'breadcumb_lista': 'Crear Pieza',
-            'encabezado_pagina': 'Pieza',
-            'form':form,
-            'object': object,
-            'layout': layout}
+                  {'title_html': 'Pieza',
+                   'url_cancel': reverse('dashboards:lista_pieza'),
+                   'breadcumb_lista': 'Crear Pieza',
+                   'encabezado_pagina': 'Pieza',
+                   'form': form,
+                   'object': object,
+                   'layout': 'layout/default.html'}
                   )
+
 
 @login_required
 def editar_pieza(request, pk):
-    title_html = 'Equipo'
-    layout = 'layout/default.html'
-    url_cancel = reverse('dashboards:lista_pieza')
+    try:
+        if not request.user.groups.filter(permissions__codename='change_pieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     categoria_vieja = Pieza.objects.get(id=pk).categoria
     object_pk = get_object_or_404(Pieza, pk=pk)
     if request.POST:
@@ -1227,24 +1355,29 @@ def editar_pieza(request, pk):
                 # if request.GET.get('popup'):
                 #     return HttpResponseRedirect(reverse('expediente:equipo_propiedad', args=[object_pk.id]) + 'popup=1')
                 # else:
-                return HttpResponseRedirect(reverse('dashboards:pieza_propiedad', args=[object_pk.id]),{'layout':layout})
+                return HttpResponseRedirect(reverse('dashboards:pieza_propiedad', args=[object_pk.id]),
+                                            {'layout': 'layout/default.html'})
 
     else:
         form = ParteModelForm(instance=object_pk)
         # form_modelo = ModeloModelForm()
         # form_marca = MarcaModelForm()
     return render(request, 'pages/equipo/create_update_equipo.html',
-                  {'form': form, 'object_pk': object_pk, 'url_cancel': url_cancel, 'title_html': title_html,
-                    'layout':layout,'nombre_tabla': 'equipo',
-                    'breadcumb_lista': 'Editar Equipo ['+object_pk.nombre+']',
-                    'encabezado_pagina': 'Equipos',
+                  {'form': form, 'object_pk': object_pk, 'url_cancel': reverse('dashboards:lista_pieza'), 'title_html': 'Pieza',
+                   'layout': 'layout/default.html', 'nombre_tabla': 'equipo',
+                   'breadcumb_lista': 'Editar Equipo [' + object_pk.nombre + ']',
+                   'encabezado_pagina': 'Equipos',
                    })
+
 
 @login_required
 def eliminar_pieza(request, pk):
-    url_cancel = reverse('dashboards:lista_pieza')
-    layout = 'layout/default.html'
-    title_html = 'Pieza'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_pieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Pieza, pk=pk)
     if request.POST:
         object = get_object_or_404(Pieza, pk=pk)
@@ -1255,26 +1388,30 @@ def eliminar_pieza(request, pk):
         return HttpResponseRedirect(reverse('dashboards:lista_pieza'))
 
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Pieza',
+        'url_cancel': reverse('dashboards:lista_pieza'),
         'breadcumb_lista': 'Eliminar Pieza [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Pieza',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
 
+
 @login_required
 def pieza_propiedad(request, pk):
-    title_html = 'Pieza'
-    layout = 'layout/default.html'
-    url_cancel = reverse("dashboards:editar_pieza", args=[pk])
+    try:
+        if not request.user.groups.filter(permissions__codename='change_pieza'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     pieza = get_object_or_404(Pieza, pk=pk)
     propiedades = pieza.propiedadpieza_set.all()
     propiedades_nombres = pieza.propiedades.all()
 
     PropiedadPiezaFormSet = modelformset_factory(PropiedadPieza, form=PropiedadPiezaModelForm,
-                                                  extra=propiedades.count(), max_num=propiedades.count())
+                                                 extra=propiedades.count(), max_num=propiedades.count())
     if request.POST:
         formset = PropiedadPiezaFormSet(request.POST, request.FILES)
         if formset.is_valid():
@@ -1283,23 +1420,23 @@ def pieza_propiedad(request, pk):
                 pp.valor = form.cleaned_data['valor']
                 pp.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_pieza'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_pieza'), {'layout': 'layout/default.html'})
     else:
         formset = PropiedadPiezaFormSet(queryset=propiedades)
         if propiedades.count() > 0:
             KTTheme.addJavascriptFile('js/propiedad_nombre.js')
             return render(request, 'pages/equipo/equipo_propiedad.html', {'formset': formset,
-                                                                    'url_cancel': url_cancel,
-                                                                    'propiedades': propiedades,
-                                                                    'pieza': pieza,
-                                                                    'title_html': title_html,
-                                                                        'layout':layout,
+                                                                          'url_cancel': reverse("dashboards:editar_pieza", args=[pk]),
+                                                                          'propiedades': propiedades,
+                                                                          'pieza': pieza,
+                                                                          'title_html': 'Pieza',
+                                                                          'layout': 'layout/default.html',
                                                                           'breadcumb_lista': 'Establecer Valor a Pieza',
                                                                           'encabezado_pagina': 'Pieza',
-                                                                    'propiedades_nombres': propiedades_nombres
-                                                                    })
+                                                                          'propiedades_nombres': propiedades_nombres
+                                                                          })
         else:
-            return HttpResponseRedirect(reverse('dashboards:lista_pieza'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_pieza'), {'layout': 'layout/default.html'})
 
 
 ###################################################
@@ -1308,21 +1445,25 @@ def pieza_propiedad(request, pk):
 
 @login_required()
 def lista_parte(request, **kwargs):
+    try:
+        if not request.user.groups.filter(permissions__codename='view_parte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object_list = Parte.objects.all()
-    crear_url = reverse('dashboards:crear_parte')
-    title_html = 'Parte'
     dict_object_list = {}
     variables_filtro = ['marca', 'modelo', 'empresa', 'organismo', 'osde', 'estado']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_parte", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_parte", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar,'url_eliminar':url_eliminar}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
+        'title_html': 'Parte',
+        'crear_url': reverse('dashboards:crear_parte'),
         'variables_filtro': variables_filtro,
         'nombre_tabla': 'parte',
         'breadcumb_lista': 'Parte',
@@ -1333,11 +1474,15 @@ def lista_parte(request, **kwargs):
     KTTheme.addJavascriptFile('../assets/js/message.js')
     return render(request, 'pages/equipo/list.html', context)
 
+
 @login_required
 def crear_parte(request):
-    title_html = 'Parte'
-    layout = 'layout/default.html'
-    url_cancel = reverse('dashboards:lista_parte')
+    try:
+        if not request.user.groups.filter(permissions__codename='add_parte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     if request.POST:
         form = ParteModelForm(request.POST, request.FILES)
         if form.is_valid():
@@ -1356,26 +1501,30 @@ def crear_parte(request):
                                                                 modelo=form.cleaned_data['modelo'])
                 mm.parte = True
                 mm.save()
-                messages.success(request,'El elemento ha sido creado satisfactoriamente')
-                return HttpResponseRedirect(reverse('dashboards:parte_propiedad', args=[parte.id]),{'layout':layout})
+                messages.success(request, 'El elemento ha sido creado satisfactoriamente')
+                return HttpResponseRedirect(reverse('dashboards:parte_propiedad', args=[parte.id]), {'layout': 'layout/default.html'})
     else:
         form = ParteModelForm()
 
     return render(request, 'pages/equipo/create_update_equipo.html',
-                  {'title_html': title_html,
-            'url_cancel': url_cancel,
-            'breadcumb_lista': 'Crear Parte',
-            'encabezado_pagina': 'Parte',
-            'form':form,
-            'object': object,
-            'layout': layout}
+                  {'title_html': 'Parte',
+                   'url_cancel': reverse('dashboards:lista_parte'),
+                   'breadcumb_lista': 'Crear Parte',
+                   'encabezado_pagina': 'Parte',
+                   'form': form,
+                   'object': object,
+                   'layout': 'layout/default.html'}
                   )
+
 
 @login_required
 def editar_parte(request, pk):
-    title_html = 'Equipo'
-    layout = 'layout/default.html'
-    url_cancel = reverse('dashboards:lista_parte')
+    try:
+        if not request.user.groups.filter(permissions__codename='change_parte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     categoria_vieja = Parte.objects.get(id=pk).categoria
     object_pk = get_object_or_404(Parte, pk=pk)
     if request.POST:
@@ -1412,24 +1561,29 @@ def editar_parte(request, pk):
                 # if request.GET.get('popup'):
                 #     return HttpResponseRedirect(reverse('expediente:equipo_propiedad', args=[object_pk.id]) + 'popup=1')
                 # else:
-                return HttpResponseRedirect(reverse('dashboards:parte_propiedad', args=[object_pk.id]),{'layout':layout})
+                return HttpResponseRedirect(reverse('dashboards:parte_propiedad', args=[object_pk.id]),
+                                            {'layout': 'layout/default.html'})
 
     else:
         form = ParteModelForm(instance=object_pk)
         # form_modelo = ModeloModelForm()
         # form_marca = MarcaModelForm()
     return render(request, 'pages/equipo/create_update_equipo.html',
-                  {'form': form, 'object_pk': object_pk, 'url_cancel': url_cancel, 'title_html': title_html,
-                    'layout':layout,'nombre_tabla': 'equipo',
-                    'breadcumb_lista': 'Editar Equipo ['+object_pk.nombre+']',
-                    'encabezado_pagina': 'Equipos',
+                  {'form': form, 'object_pk': object_pk, 'url_cancel': reverse('dashboards:lista_parte'), 'title_html': 'Parte',
+                   'layout': 'layout/default.html', 'nombre_tabla': 'equipo',
+                   'breadcumb_lista': 'Editar Equipo [' + object_pk.nombre + ']',
+                   'encabezado_pagina': 'Equipos',
                    })
+
 
 @login_required
 def eliminar_parte(request, pk):
-    url_cancel = reverse('dashboards:lista_parte')
-    layout = 'layout/default.html'
-    title_html = 'Parte'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_parte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     object = get_object_or_404(Parte, pk=pk)
     if request.POST:
         object = get_object_or_404(Parte, pk=pk)
@@ -1440,26 +1594,30 @@ def eliminar_parte(request, pk):
         return HttpResponseRedirect(reverse('dashboards:lista_parte'))
 
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
+        'title_html': 'Parte',
+        'url_cancel': reverse('dashboards:lista_parte'),
         'breadcumb_lista': 'Eliminar Parte [ ' + object.nombre + ' ]',
         'encabezado_pagina': 'Parte',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
 
+
 @login_required
 def parte_propiedad(request, pk):
-    title_html = 'Parte'
-    layout = 'layout/default.html'
-    url_cancel = reverse("dashboards:editar_parte", args=[pk])
+    try:
+        if not request.user.groups.filter(permissions__codename='change_parte'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     parte = get_object_or_404(Parte, pk=pk)
     propiedades = parte.propiedadparte_set.all()
     propiedades_nombres = parte.propiedades.all()
 
     PropiedadParteFormSet = modelformset_factory(PropiedadParte, form=PropiedadParteModelForm,
-                                                  extra=propiedades.count(), max_num=propiedades.count())
+                                                 extra=propiedades.count(), max_num=propiedades.count())
     if request.POST:
         formset = PropiedadParteFormSet(request.POST, request.FILES)
         if formset.is_valid():
@@ -1468,23 +1626,23 @@ def parte_propiedad(request, pk):
                 pp.valor = form.cleaned_data['valor']
                 pp.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_parte'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_parte'), {'layout': 'layout/default.html'})
     else:
         formset = PropiedadParteFormSet(queryset=propiedades)
         if propiedades.count() > 0:
             KTTheme.addJavascriptFile('js/propiedad_nombre.js')
             return render(request, 'pages/equipo/equipo_propiedad.html', {'formset': formset,
-                                                                    'url_cancel': url_cancel,
-                                                                    'propiedades': propiedades,
-                                                                    'pieza': parte,
-                                                                    'title_html': title_html,
-                                                                        'layout':layout,
+                                                                          'url_cancel': reverse("dashboards:editar_parte", args=[pk]),
+                                                                          'propiedades': propiedades,
+                                                                          'pieza': parte,
+                                                                          'title_html': 'Parte',
+                                                                          'layout': 'layout/default.html',
                                                                           'breadcumb_lista': 'Establecer Valor a Parte',
                                                                           'encabezado_pagina': 'Parte',
-                                                                    'propiedades_nombres': propiedades_nombres
-                                                                    })
+                                                                          'propiedades_nombres': propiedades_nombres
+                                                                          })
         else:
-            return HttpResponseRedirect(reverse('dashboards:lista_parte'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_parte'), {'layout': 'layout/default.html'})
 
 
 ###################################################
@@ -1493,23 +1651,29 @@ def parte_propiedad(request, pk):
 
 @login_required()
 def lista_equipo(request, **kwargs):
-    object_list = Equipo.objects.all()
-    crear_url = reverse('dashboards:crear_equipo')
-    title_html = 'Vehïculos'
+    try:
+        if not request.user.groups.filter(permissions__codename='view_equipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
+    if request.user.groups.filter(name='Tramitador'):
+        object_list = Equipo.objects.filter(user=request.user)
+    else:
+        object_list = Equipo.objects.filter()
+
     dict_object_list = {}
-    variables_filtro = ['marca', 'modelo', 'empresa', 'organismo', 'osde', 'estado']
 
     for element in object_list:
         url_editar = reverse("dashboards:editar_equipo", args=[element.pk])
         url_eliminar = reverse("dashboards:eliminar_equipo", args=[element.pk])
         url_pdf = reverse("dashboards:generar_pdf_equipo", args=[element.pk])
-        dict_object_list[element] = {'url_editar': url_editar,'url_eliminar':url_eliminar,'url_pdf':url_pdf}
+        dict_object_list[element] = {'url_editar': url_editar, 'url_eliminar': url_eliminar, 'url_pdf': url_pdf}
 
     context = {
         'dict_object_list': dict_object_list,
-        'title_html': title_html,
-        'crear_url': crear_url,
-        'variables_filtro': variables_filtro,
+        'title_html': 'Vehículos',
+        'crear_url': reverse('dashboards:crear_equipo'),
         'nombre_tabla': 'equipo',
         'breadcumb_lista': 'Vehïculos',
         'encabezado_pagina': 'Vehïculos',
@@ -1519,17 +1683,24 @@ def lista_equipo(request, **kwargs):
     KTTheme.addJavascriptFile('../assets/js/message.js')
     return render(request, 'pages/equipo/list.html', context)
 
+
 @login_required
 def crear_equipo(request):
-    title_html = 'Vehïculo'
-    layout = 'layout/default.html'
-    url_cancel = reverse('dashboards:lista_equipo')
+    try:
+        if not request.user.groups.filter(permissions__codename='add_equipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
+
     if request.POST:
         form = EquipoModelForm(request.POST, request.FILES)
         if form.is_valid():
             with transaction.atomic():
                 # guardo el modelo pieza
-                equipo = form.save()
+                equipo = form.save(commit=False)
+                equipo.user = request.user
+                equipo.save()
                 # lleno el modelo propiedadpieza con las propiedades que estan asociadas a la pieza
                 categoria = CategoriaEquipo.objects.get(id=form.cleaned_data['categoria'].id)
                 for i in categoria.propiedad.all():
@@ -1542,26 +1713,32 @@ def crear_equipo(request):
                                                                 modelo=form.cleaned_data['modelo'])
                 mm.equipo = True
                 mm.save()
-                messages.success(request,'El elemento ha sido creado satisfactoriamente')
-                return HttpResponseRedirect(reverse('dashboards:equipo_propiedad', args=[equipo.id]),{'layout':layout})
+                messages.success(request, 'El elemento ha sido creado satisfactoriamente')
+                return HttpResponseRedirect(reverse('dashboards:equipo_propiedad', args=[equipo.id]),
+                                            {'layout': 'layout/default.html'})
     else:
         form = EquipoModelForm()
 
     return render(request, 'pages/equipo/create_update_equipo.html',
-                  {'title_html': title_html,
-            'url_cancel': url_cancel,
-            'breadcumb_lista': 'Crear Vehïculo',
-            'encabezado_pagina': 'Vehïculo',
-            'form':form,
-            'object': object,
-            'layout': layout}
+                  {'title_html': 'Vehículo',
+                   'url_cancel': reverse('dashboards:lista_equipo'),
+                   'breadcumb_lista': 'Crear Vehículo',
+                   'encabezado_pagina': 'Vehículo',
+                   'form': form,
+                   'object': object,
+                   'layout': 'layout/default.html'}
                   )
+
 
 @login_required
 def editar_equipo(request, pk):
-    title_html = 'Vehïculo'
-    layout = 'layout/default.html'
-    url_cancel = reverse('dashboards:lista_equipo')
+    try:
+        if not request.user.groups.filter(permissions__codename='change_equipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
+
     categoria_vieja = Equipo.objects.get(id=pk).categoria
     object_pk = get_object_or_404(Equipo, pk=pk)
     if request.POST:
@@ -1594,52 +1771,62 @@ def editar_equipo(request, pk):
                                                                 modelo=form.cleaned_data['modelo'])
                 mm.equipo = True
                 mm.save()
-                messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.nombre)
+                messages.success(request, '%s ha sido actualizado satisfactoriamente' % object_pk.codigo)
                 # if request.GET.get('popup'):
                 #     return HttpResponseRedirect(reverse('expediente:equipo_propiedad', args=[object_pk.id]) + 'popup=1')
                 # else:
-                return HttpResponseRedirect(reverse('dashboards:equipo_propiedad', args=[object_pk.id]),{'layout':layout})
+                return HttpResponseRedirect(reverse('dashboards:equipo_propiedad', args=[object_pk.id]),
+                                            {'layout': 'layout/default.html'})
 
     else:
         form = EquipoModelForm(instance=object_pk)
         # form_modelo = ModeloModelForm()
         # form_marca = MarcaModelForm()
     return render(request, 'pages/equipo/create_update_equipo.html',
-                  {'form': form, 'object_pk': object_pk, 'url_cancel': url_cancel, 'title_html': title_html,
-                    'layout':layout,'nombre_tabla': 'equipo',
-                    'breadcumb_lista': 'Editar Vehïculo ['+object_pk.nombre+']',
-                    'encabezado_pagina': 'Vehïculos',
+                  {'form': form, 'object_pk': object_pk, 'url_cancel': reverse('dashboards:lista_equipo'), 'title_html': 'Vehículo',
+                   'layout': 'layout/default.html', 'nombre_tabla': 'equipo',
+                   'breadcumb_lista': 'Editar Vehïculo [' + object_pk.codigo + ']',
+                   'encabezado_pagina': 'Vehïculos',
                    })
+
 
 @login_required
 def eliminar_equipo(request, pk):
-    url_cancel = reverse('dashboards:lista_equipo')
-    layout = 'layout/default.html'
-    title_html = 'Vehïculo'
+    try:
+        if not request.user.groups.filter(permissions__codename='delete_equipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
+
     object = get_object_or_404(Equipo, pk=pk)
     if request.POST:
         object = get_object_or_404(Equipo, pk=pk)
         object.propiedadequipo_set.all().delete()
         object.delete()
 
-        messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.nombre)
+        messages.success(request, '%s ha sido eliminado satisfactoriamente' % object.codigo)
         return HttpResponseRedirect(reverse('dashboards:lista_equipo'))
 
     context = {
-        'title_html': title_html,
-        'url_cancel': url_cancel,
-        'breadcumb_lista': 'Eliminar Vehïculo [ ' + object.nombre + ' ]',
+        'title_html': 'Vehículo',
+        'url_cancel': reverse('dashboards:lista_equipo'),
+        'breadcumb_lista': 'Eliminar Vehïculo [ ' + object.codigo + ' ]',
         'encabezado_pagina': 'Vehïculo',
         'object': object,
-        'layout': layout
+        'layout': 'layout/default.html'
     }
     return render(request, 'pages/common/delete.html', context)
 
+
 @login_required
 def equipo_propiedad(request, pk):
-    title_html = 'Equipo'
-    layout = 'layout/default.html'
-    url_cancel = reverse("dashboards:editar_equipo", args=[pk])
+    try:
+        if not request.user.groups.filter(permissions__codename='change_equipo'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
+
     equipo = get_object_or_404(Equipo, pk=pk)
     propiedades = equipo.propiedadequipo_set.all()
     propiedades_nombres = equipo.propiedades.all()
@@ -1654,26 +1841,28 @@ def equipo_propiedad(request, pk):
                 pp.valor = form.cleaned_data['valor']
                 pp.save()
             messages.success(request, 'El elemento ha sido creado satisfactoriamente')
-            return HttpResponseRedirect(reverse('dashboards:lista_equipo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_equipo'), {'layout': 'layout/default.html'})
     else:
         formset = PropiedadEquipoFormSet(queryset=propiedades)
         if propiedades.count() > 0:
             KTTheme.addJavascriptFile('js/propiedad_nombre.js')
             return render(request, 'pages/equipo/equipo_propiedad.html', {'formset': formset,
-                                                                    'url_cancel': url_cancel,
-                                                                    'propiedades': propiedades,
-                                                                    'equipo': equipo,
-                                                                    'title_html': title_html,
-                                                                        'layout':layout,
+                                                                          'url_cancel': reverse("dashboards:editar_equipo", args=[pk]),
+                                                                          'propiedades': propiedades,
+                                                                          'equipo': equipo,
+                                                                          'title_html': 'Vehículo',
+                                                                          'layout': 'layout/default.html',
                                                                           'breadcumb_lista': 'Establecer Valor a Propiedades',
                                                                           'encabezado_pagina': 'Equipo',
-                                                                    'propiedades_nombres': propiedades_nombres
-                                                                    })
+                                                                          'propiedades_nombres': propiedades_nombres
+                                                                          })
         else:
-            return HttpResponseRedirect(reverse('dashboards:lista_equipo'),{'layout':layout})
+            return HttpResponseRedirect(reverse('dashboards:lista_equipo'), {'layout': 'layout/default.html'})
+
 
 # @login_required
 class ExpedienteEquipoPDFView(View):
+
     def link_callback(self, uri, rel):
         sUrl = settings.STATIC_URL
         sRoot = settings.STATICFILES_DIRS
@@ -1741,6 +1930,7 @@ class ListadoEquipoPDFView(View):
 
     def get(self, request, *args, **kwargs):
         try:
+
             template = get_template('pages/equipo/listado_equipo_pdf.html')
             equipo = Equipo.objects.all()
             context = {
@@ -1767,18 +1957,23 @@ class ListadoEquipoPDFView(View):
         return HttpResponseRedirect(reverse_lazy('dashboard:lista_equipo'))
 
 
-
 @login_required
 def perfil_usuario(request):
-    layout = 'layout/default.html'
+    try:
+        if not request.user.groups.filter(permissions__codename='view_userperfil'):
+            raise PermissionDenied
+    except PermissionDenied:
+        return redirect('dashboards:error')
 
-    # acciones2 = LogEntry.changes
     acciones = LogEntry.objects.filter(actor_id=request.user.id).order_by('-timestamp')[:8]
+    perfil = request.user
+
 
     context = {
         'title_html': 'Perfil',
-        'acciones':acciones,
-        'breadcumb_lista':'Perfil'
+        'acciones': acciones,
+        'perfil': perfil,
+        'breadcumb_lista': 'Perfil'
     }
     context = KTLayout.init(context)
 
@@ -1805,13 +2000,13 @@ def reporte_equipo(request):
     }
 
     if request.POST:
-        marca_query =request.POST['marca']
-        modelo_query =request.POST['modelo']
-        estado_query =request.POST['estado']
-        empresa_query =request.POST['empresa']
+        marca_query = request.POST['marca']
+        modelo_query = request.POST['modelo']
+        estado_query = request.POST['estado']
+        empresa_query = request.POST['empresa']
         fecha_range = request.POST.get('fecha_registro', '')
 
-        q=Q()
+        q = Q()
 
         if marca_query:
             q &= Q(marca__nombre__icontains=marca_query)
@@ -1837,6 +2032,11 @@ def reporte_equipo(request):
         return render(request, "pages/equipo/reporte_equipo.html", context)
 
     context = KTLayout.init(context)
-    KTTheme.addJavascriptFile('../assets/js/forms.js',)
+    KTTheme.addJavascriptFile('../assets/js/forms.js', )
     KTTheme.addJavascriptFile('../assets/js/kt_table.js')
     return render(request, "pages/equipo/reporte_equipo.html", context)
+
+
+@login_required()
+def error(request):
+    return render(request, 'pages/auth/error.html',{'title':'Permisos'})

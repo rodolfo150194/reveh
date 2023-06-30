@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" {% printHtmlAttributes 'html' %}>
+<!--begin::Head-->
+<head>
+    <title>{{ title }} - REVEH</title>
+    <meta charset="utf-8"/>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content=""/>
+    <link rel="canonical" href=""/>
+    <link rel="shortcut icon" href="{% includeFavicon %}"/>
+
+    {% block css %}
+        <!--begin::Fonts-->
+        {% includeFonts %}
+        <!--end::Fonts-->
+
+        <!--begin::Vendor Stylesheets(optional)-->
+        {% getVendors 'css' as vendors_css %}
+        {% for file in vendors_css %}
+            <link href="{{ file }}" rel="stylesheet" type="text/css"/>
+        {% endfor %}
+        <!--end::Vendor Stylesheets-->
+
+        <!--begin::Custom Stylesheets(optional)-->
+        {% getCustomCss as css %}
+        {% for file in css %}
+            <link href="{% static file %}" rel="stylesheet" type="text/css"/>
+        {% endfor %}
+        <!--end::Custom Stylesheets-->
+
+        <!--begin::Global Stylesheets(mandatory)-->
+        {% getGlobalAssets 'css' as assets_css %}
+        {% for file in assets_css %}
+            <link href="{% static file %}" rel="stylesheet" type="text/css"/>
+        {% endfor %}
+        <!--end::Global Stylesheets-->
+    {% endblock css %}
+
+    <!--begin::Tracking-->
+    <!--end::Tracking-->
+</head>
+<!--end::Head-->
+
+<!--begin::Body-->
+<body id="kt_app_body" data-kt-app-header-stacked="true" data-kt-app-header-primary-enabled="true"
+      data-kt-app-header-secondary-enabled="true" data-kt-app-toolbar-enabled="true" class="app-default">
+
+{% include 'partials/theme-mode/_init.html' %}
+<script>var defaultThemeMode = "dark";
+var themeMode;
+if (document.documentElement) {
+    if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
+        themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
+    } else {
+        if (localStorage.getItem("data-bs-theme") !== null) {
+            themeMode = localStorage.getItem("data-bs-theme");
+        } else {
+            themeMode = defaultThemeMode;
+        }
+    }
+    if (themeMode === "system") {
+        themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    document.documentElement.setAttribute("data-bs-theme", themeMode);
+}</script>
+<!--end::Theme mode setup on page load-->
+<!--begin::Root-->
+<div class="d-flex flex-column flex-root" id="kt_app_root">
+    <!--begin::Page bg image-->
+    <style>body {
+        background-image: url('assets/media/auth/bg1.jpg');
+    }
+
+    [data-bs-theme="dark"] body {
+        background-image: url('assets/media/auth/bg1-dark.jpg');
+    }</style>
+    <!--end::Page bg image-->
+    <!--begin::Authentication - Signup Welcome Message -->
+    <div class="d-flex flex-column flex-center flex-column-fluid">
+        <!--begin::Content-->
+        <div class="d-flex flex-column flex-center text-center p-10">
+            <!--begin::Wrapper-->
+            <div class="card card-flush w-lg-650px py-5">
+                <div class="card-body py-15 py-lg-20">
+                    <!--begin::Title-->
+                    <h1 class="fw-bolder fs-2hx text-gray-900 mb-4">Oops!</h1>
+                    <!--end::Title-->
+                    <!--begin::Text-->
+                    <div class="fw-semibold fs-6 text-gray-500 mb-7">No tienes permiso para acceder a esta página.</div>
+                    <!--end::Text-->
+                    <!--begin::Illustration-->
+                    <div class="mb-3">
+                        <img src="{% asset 'media/auth/404-error.png' %}" class="mw-100 mh-300px theme-light-show" alt=""/>
+                        <img src="{% asset 'media/auth/404-error-dark.png' %}" class="mw-100 mh-300px theme-dark-show" alt=""/>
+                    </div>
+                    <!--end::Illustration-->
+                    <!--begin::Link-->
+                    <div class="mb-0">
+                        <a href="#" onclick="goBack()" class="btn btn-sm btn-primary">Volver</a>
+                    </div>
+                    <!--end::Link-->
+                </div>
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Content-->
+    </div>
+    <!--end::Authentication - Signup Welcome Message-->
+</div>
+<script>
+  function goBack() {
+    window.history.back();
+  }
+</script>
+<!--end::Root-->
+<!--begin::Javascript-->
+<script>var hostUrl = "assets/";</script>
+<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+<script src="assets/plugins/global/plugins.bundle.js"></script>
+<script src="assets/js/scripts.bundle.js"></script>
+<!--end::Global Javascript Bundle-->
+
+
+{% block javascript %}
+    <!--begin::Global Javascript(mandatory)-->
+    {% getGlobalAssets 'js' as assets_js %}
+    {% for file in assets_js %}
+        <script src="{% static file %}"></script>
+    {% endfor %}
+    <!--end::Global Javascript-->
+
+    <!--begin::Vendors Javascript(optional)-->
+    {% getVendors 'js' as vendors_js %}
+    {% for file in vendors_js %}
+        <script src="{{ file }}"></script>
+    {% endfor %}
+    <!--end::Vendors Javascript-->
+
+    <!--begin::Custom Javascript(optional)-->
+    {% getCustomJs as js %}
+    {% for file in js %}
+        <script src="{% static file %}"></script>
+    {% endfor %}
+    <!--end::Custom Javascript-->
+{% endblock javascript %}
+
+</body>
+<!--end::Body-->
+</html>
+
+

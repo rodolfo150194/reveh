@@ -4,8 +4,27 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from _keenthemes.settings import MEDIA_URL, STATIC_URL
+
+class Estado(models.Model):
+    history = AuditlogHistoryField()
+    nombre = models.CharField(max_length=50, verbose_name='Estado', unique=True)
+    fecha_registro = models.DateField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = 'estado'
+        verbose_name = 'Estado'
+        verbose_name_plural = 'Estados'
+        ordering = ['nombre']
+
+    def __str__(self):
+        return self.nombre
+
+auditlog.register(Estado)
+
 
 class Provincia(models.Model):
     history = AuditlogHistoryField()
@@ -21,6 +40,8 @@ class Provincia(models.Model):
 
     def __str__(self):
         return self.nombre
+
+auditlog.register(Provincia)
 
 class Organismo(models.Model):
     history = AuditlogHistoryField()
@@ -366,13 +387,14 @@ class PropiedadParte(models.Model):
 auditlog.register(PropiedadParte)
 
 class Equipo(models.Model):
-    ESTADO_CHOICES = (
-        ('Activo', 'Activo'),
-        ('Reparación', 'Reparación'),
-        ('Venta', 'Venta'),
-    )
+    # ESTADO_CHOICES = (
+    #     ('Activo', 'Activo'),
+    #     ('Reparación', 'Reparación'),
+    #     ('Venta', 'Venta'),
+    # )
     history = AuditlogHistoryField()
-    empresa = models.ForeignKey(Empresa, verbose_name='Empresa', on_delete=models.PROTECT)
+    empresa_recibo = models.CharField(verbose_name='Empresa de donde se recibe', null=True,blank=True,max_length=255)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE,null=True,blank=True)
     codigo = models.CharField(verbose_name='Codigo', max_length=50,null=True)
     categoria = models.ForeignKey(CategoriaEquipo, verbose_name='Categoria', on_delete=models.PROTECT)
     marca = models.ForeignKey(Marca, verbose_name='Marca', on_delete=models.PROTECT)
@@ -381,8 +403,10 @@ class Equipo(models.Model):
     descripcion = models.TextField(verbose_name='Descripción', null=True, blank=True)
     propiedades = models.ManyToManyField(Propiedad, verbose_name='Propiedad', blank=True, through='PropiedadEquipo')
     partes = models.ManyToManyField(Parte, verbose_name='Parte', blank=True)
-    estado = models.CharField(verbose_name='Estado',max_length=11, choices=ESTADO_CHOICES)
+    # estado = models.CharField(verbose_name='Estado',max_length=11, choices=ESTADO_CHOICES)
+    estado = models.ForeignKey(Estado, on_delete=models.SET_NULL,null=True,blank=True)
     foto = models.ImageField(verbose_name='Imagenes',upload_to='Equipo/', null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
     fecha_registro = models.DateField(auto_now_add=True,null=True,blank=True)
 
     class Meta:
@@ -418,8 +442,25 @@ class PropiedadEquipo(models.Model):
         # unique_together = (('equipo', 'propiedad'),)
 
     def __str__(self):
-        return self.equipo.nombre + ' - ' + self.propiedad.nombre
+        return self.equipo.codigo + ' - ' + self.propiedad.nombre
 
 
 
 auditlog.register(PropiedadEquipo)
+
+class UserPerfil(models.Model):
+    history = AuditlogHistoryField()
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    empresa = models.ForeignKey(Empresa, on_delete=models.SET_NULL,null=True,blank=True)
+    email = models.EmailField(verbose_name='Correo',null=True,blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+auditlog.register(UserPerfil)
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserPerfil.objects.create(user=instance)

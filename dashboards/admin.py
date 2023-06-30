@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import Permission
 
 from dashboards.models import *
 
@@ -17,3 +18,6 @@ admin.site.register(Equipo)
 admin.site.register(MarcaModelo)
 admin.site.register(Marca)
 admin.site.register(Modelo)
+admin.site.register(UserPerfil)
+admin.site.register(Permission)
+admin.site.register(Estado)

@@ -212,11 +212,12 @@ class EquipoModelForm(forms.ModelForm):
     class Meta:
         model = Equipo
         fields = '__all__'
+        exclude = ['user']
 
         widgets = {
             'categoria': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
             'estado': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'codigo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': Textarea(
                 attrs={
                     'class': 'form-control', 'rows': 3, 'cols': 2
