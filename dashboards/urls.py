@@ -61,6 +61,18 @@ urlpatterns = [
     path('categoriaequipo/editar/<int:pk>', editar_categoriaequipo, name='editar_categoriaequipo'),
     path('categoriaequipo/eliminar/<int:pk>', eliminar_categoriaequipo, name='eliminar_categoriaequipo'),
 
+    # Crud CONFIGURAREQUIPOXPARTE
+    path('listado_equipoxparte/lista', lista_equipoxparte, name='lista_equipoxparte'),
+    path('equipoxparte/crear', create_equipoxparte, name='create_equipoxparte'),
+    path('equipoxparte/editar/<int:pk>', editar_equipoxparte, name='editar_equipoxparte'),
+    path('equipoxparte/eliminar/<int:pk>', eliminar_equipoxparte, name='eliminar_equipoxparte'),
+
+# Crud CONFIGURARPARTEXPIEZA
+    path('listado_partexpieza/lista', lista_partexpieza, name='lista_partexpieza'),
+    path('partexpieza/crear', create_partexpieza, name='create_partexpieza'),
+    path('partexpieza/editar/<int:pk>', editar_partexpieza, name='editar_partexpieza'),
+    path('partexpieza/eliminar/<int:pk>', eliminar_partexpieza, name='eliminar_partexpieza'),
+
     # #Crud CATEGORIAINSUMO
     # path('categoriainsumo/lista', lista_categoriainsumo, name='lista_categoriainsumo'),
     # path('categoriainsumo/crear', create_categoriainsumo, name='create_categoriainsumo'),
@@ -72,7 +84,9 @@ urlpatterns = [
     path('equipo/crear', crear_equipo, name='crear_equipo'),
     path('equipo/<int:pk>/propiedad', equipo_propiedad, name='equipo_propiedad'),
     path('equipo/editar/<int:pk>', editar_equipo, name='editar_equipo'),
+    path('equipo/detalle/<int:pk>', detalle_equipo, name='detalle_equipo'),
     path('equipo/eliminar/<int:pk>', eliminar_equipo, name='eliminar_equipo'),
+    path('equipo/<int:pk>/partes', llenar_datos_parte_equipo, name='llenar_datos_parte_equipo'),
 
     # Crud Pieza
     path('listado_pieza/lista', lista_pieza, name='lista_pieza'),
@@ -87,6 +101,7 @@ urlpatterns = [
     path('parte/<int:pk>/propiedad', parte_propiedad, name='parte_propiedad'),
     path('parte/editar/<int:pk>', editar_parte, name='editar_parte'),
     path('parte/eliminar/<int:pk>', eliminar_parte, name='eliminar_parte'),
+    path('parte/<int:pk>/piezas', llenar_datos_pieza_parte, name='llenar_datos_pieza_parte'),
 
     #PDF
     path('equipo/pdf/<int:pk>', ExpedienteEquipoPDFView.as_view(), name='generar_pdf_equipo'),

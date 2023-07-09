@@ -93,7 +93,11 @@
 
                                 <!--begin::Content-->
                                 <span class="ext-gray-700 fw-bold fs-6">¿Estas seguro de eliminar el registro
-                                    [{{ object.nombre }}]
+                                    {% if 'categoriaequipo' in request.path or 'categoriapieza' in request.path or 'categoriainsumo' in request.path  or 'categoriaparte' in request.path or 'propiedad' in request.path or 'marca' in request.path or 'modelo' in request.path or 'pieza' in request.path or 'parte' in request.path  %}
+                                        [{{ object.nombre }}]
+                                    {% else %}
+                                        [{{ object.marca }} - {{ object.modelo }}]
+                                    {% endif %}
                                     ?.</span>
                                 <!--end::Content-->
                             </div>

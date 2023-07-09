@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'auditlog',
     'bootstrap5',
+    'widget_tweaks',
     # Keenthemes Apps
     'dashboards.apps.DashboardsConfig',
 ]

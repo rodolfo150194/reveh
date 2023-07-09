@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
 from _keenthemes.views import SystemView
-from dashboards.views import Inicio
+from dashboards.views import Inicio, addModelo, addMarca
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,6 +25,8 @@ urlpatterns = [
     # Dashboard urls
     path('', include('dashboards.urls')),
     path('', Inicio, name='inicio'),
+    path('add/modelo/', addModelo, name='modelo_crear_popup'),
+    path('add/marca/', addMarca, name='marca_crear_popup'),
 
     # Auth urls
     path('accounts/', include('django.contrib.auth.urls')),

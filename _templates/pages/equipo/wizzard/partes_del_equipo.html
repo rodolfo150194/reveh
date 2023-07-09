@@ -1,0 +1,358 @@
+{% extends layout %}
+{% load static i18n %}
+{% load bootstrap5 widget_tweaks %}
+{% block title %}
+    {{ title_html }}
+{% endblock title %}
+{% block breadcumb %}
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        <a href="{% url 'inicio' %}" class="text-white">
+            Inicio
+        </a>
+    </li>
+    <!--end::Item-->
+    <!--begin::Item-->
+    <li class="breadcrumb-item">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+        <span class="svg-icon svg-icon-5 svg-icon-gray-700 mx-n2">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+													<path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z"
+                                                          fill="currentColor"/>
+												</svg>
+											</span>
+        <!--end::Svg Icon-->
+    </li>
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        <a href="{% url 'dashboards:equipo_propiedad' object_pk.pk %}" class="text-white">
+            Equipo
+        </a>
+    </li>
+    <!--end::Item-->
+    <!--begin::Item-->
+    <li class="breadcrumb-item">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+        <span class="svg-icon svg-icon-5 svg-icon-gray-700 mx-n2">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+													<path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z"
+                                                          fill="currentColor"/>
+												</svg>
+											</span>
+        <!--end::Svg Icon-->
+    </li>
+
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        {{ breadcumb_lista }}
+    </li>
+
+{% endblock %}
+{% block content %}
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content px-0" style="padding-top: 5px !important;">
+                <div class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid gap-10"
+                     id="kt_create_account_stepper">
+                    <!--begin::Aside-->
+                    <div class="card d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px w-xxl-300px">
+                        <!--begin::Wrapper-->
+                        <div class="card-body px-6 px-lg-10 px-xxl-15 py-20">
+                            <!--begin::Nav-->
+                            <div class="stepper-nav">
+                                <!--begin::Step 1-->
+                                <div class="stepper-item completed">
+                                    <!--begin::Wrapper-->
+                                    <div class="stepper-wrapper">
+                                        <!--begin::Icon-->
+                                        <div class="stepper-icon w-40px h-40px">
+                                            <i class="stepper-check fas fa-check"></i>
+                                            <span class="stepper-number">1</span>
+                                        </div>
+                                        <!--end::Icon-->
+                                        <!--begin::Label-->
+                                        <div class="stepper-label">
+                                            <h3 class="stepper-title">Vehículo</h3>
+                                            <div class="stepper-desc fw-semibold">Datos del Vehículo</div>
+                                        </div>
+                                        <!--end::Label-->
+                                    </div>
+                                    <!--end::Wrapper-->
+                                    <!--begin::Line-->
+                                    <div class="stepper-line h-40px"></div>
+                                    <!--end::Line-->
+                                </div>
+                                <!--end::Step 1-->
+                                <div class="stepper-item completed" data-kt-stepper-element="nav">
+                                    <!--begin::Wrapper-->
+                                    <div class="stepper-wrapper">
+                                        <!--begin::Icon-->
+                                        <div class="stepper-icon w-40px h-40px">
+                                            <i class="stepper-check fas fa-check"></i>
+                                            <span class="stepper-number">2</span>
+                                        </div>
+                                        <!--end::Icon-->
+                                        <!--begin::Label-->
+                                        <div class="stepper-label">
+                                            <h3 class="stepper-title">Propiedades</h3>
+                                            <div class="stepper-desc fw-semibold">Valores de las propiedades</div>
+                                        </div>
+                                        <!--end::Label-->
+                                    </div>
+                                    <!--end::Wrapper-->
+                                    <!--begin::Line-->
+                                    <div class="stepper-line h-40px"></div>
+                                    <!--end::Line-->
+                                </div>
+                                <!--begin::Step 2-->
+                                <div class="stepper-item current" data-kt-stepper-element="nav">
+                                    <!--begin::Wrapper-->
+                                    <div class="stepper-wrapper">
+                                        <!--begin::Icon-->
+                                        <div class="stepper-icon w-40px h-40px">
+                                            <i class="stepper-check fas fa-check"></i>
+                                            <span class="stepper-number">3</span>
+                                        </div>
+                                        <!--end::Icon-->
+                                        <!--begin::Label-->
+                                        <div class="stepper-label">
+                                            <h3 class="stepper-title">Partes</h3>
+                                            <div class="stepper-desc fw-semibold">Datos de las partes</div>
+                                        </div>
+                                        <!--end::Label-->
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                            <!--end::Nav-->
+                        </div>
+                        <!--end::Wrapper-->
+                    </div>
+                    <!--begin::Aside-->
+                    <!--begin::Content-->
+                    <div class="card d-flex flex-row-fluid flex-center">
+                        <!--begin::Form-->
+                        <form class="card-body py-20 w-100 mw-xl-900px px-9"
+                              id="kt_create_account_form" method="post" enctype="multipart/form-data">
+                            <!--begin::Step 1-->
+                            {% csrf_token %}
+                            <div class="current" data-kt-stepper-element="content">
+                                <!--begin::Wrapper-->
+                                <div class="w-100">
+                                    <!--begin::Heading-->
+                                    <div class="pb-10">
+                                        <!--begin::Title-->
+                                        <h2 class="fw-bold d-flex align-items-center text-dark">Partes de
+                                            [{{ object_pk.marca.nombre }} - {{ object_pk.modelo.nombre }}]
+                                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
+                                               title="Las propiedades son las que estan relacionadas con la categoria del equipo."></i>
+                                        </h2>
+                                    </div>
+                                    <div class=" px-lg-2">
+                                        <div class="row">
+                                            <div class="me-md-5 w-100">
+                                                <!--begin::Item-->
+                                                {% if objetos.count > 0 %}
+                                                    {% for p in objetos %}
+                                                        <div class="d-flex border {% if p.tiene_campos_vacios_parte %} border-gray-300 {% else %} border-success{% endif %} border-dashed rounded p-6 mb-6">
+                                                            <!--begin::Block-->
+                                                            <div class="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                                                                <!--begin::Symbol-->
+                                                                <div class="symbol symbol-50px me-4">
+																				<span class="symbol-label">
+                                                                                {% if p.tiene_campos_vacios_parte %}
+                                                                                    <span class="svg-icon svg-icon-2qx svg-icon-primary">
+																					<svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                                                            width="24px" height="24px"
+                                                                                            viewBox="0 0 24 24"
+                                                                                            version="1.1">
+                                                                                            <g stroke="none"
+                                                                                               stroke-width="1"
+                                                                                               fill="none"
+                                                                                               fill-rule="evenodd">
+                                                                                                <rect x="0" y="0"
+                                                                                                      width="24"
+                                                                                                      height="24"/>
+                                                                                                <path d="M12,22 C6.4771525,22 2,17.5228475 2,12 C2,6.4771525 6.4771525,2 12,2 C17.5228475,2 22,6.4771525 22,12 C22,17.5228475 17.5228475,22 12,22 Z M12,20 C16.418278,20 20,16.418278 20,12 C20,7.581722 16.418278,4 12,4 C7.581722,4 4,7.581722 4,12 C4,16.418278 7.581722,20 12,20 Z M19.0710678,4.92893219 L19.0710678,4.92893219 C19.4615921,5.31945648 19.4615921,5.95262146 19.0710678,6.34314575 L6.34314575,19.0710678 C5.95262146,19.4615921 5.31945648,19.4615921 4.92893219,19.0710678 L4.92893219,19.0710678 C4.5384079,18.6805435 4.5384079,18.0473785 4.92893219,17.6568542 L17.6568542,4.92893219 C18.0473785,4.5384079 18.6805435,4.5384079 19.0710678,4.92893219 Z"
+                                                                                                      fill="currentColor"
+                                                                                                      fill-rule="nonzero"
+                                                                                                      opacity="0.3"/>
+                                                                                            </g>
+                                                                                        </svg><!--end::Svg Icon-->
+                                                                                    </span>
+
+
+                                                                                {% else %}
+                                                                                    <span class="svg-icon svg-icon-2qx  svg-icon-success">
+
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                                                         width="24px" height="24px"
+                                                                                         viewBox="0 0 24 24"
+                                                                                         version="1.1"
+                                                                                         class="kt-svg-icon">
+                                                                                        <g stroke="none"
+                                                                                           stroke-width="1" fill="none"
+                                                                                           fill-rule="evenodd">
+                                                                                            <rect x="0" y="0" width="24"
+                                                                                                  height="24"/>
+                                                                                            <circle fill="currentColor"
+                                                                                                    opacity="0.3"
+                                                                                                    cx="12" cy="12"
+                                                                                                    r="10"/>
+                                                                                            <path d="M16.7689447,7.81768175 C17.1457787,7.41393107 17.7785676,7.39211077 18.1823183,7.76894473 C18.5860689,8.1457787 18.6078892,8.77856757 18.2310553,9.18231825 L11.2310553,16.6823183 C10.8654446,17.0740439 10.2560456,17.107974 9.84920863,16.7592566 L6.34920863,13.7592566 C5.92988278,13.3998345 5.88132125,12.7685345 6.2407434,12.3492086 C6.60016555,11.9298828 7.23146553,11.8813212 7.65079137,12.2407434 L10.4229928,14.616916 L16.7689447,7.81768175 Z"
+                                                                                                  fill="currentColor"
+                                                                                                  fill-rule="nonzero"/>
+                                                                                        </g>
+                                                                                    </svg>
+                                                                                    </span>
+                                                                                {% endif %}
+                                                                                    <!--end::Svg Icon-->
+																				</span>
+                                                                </div>
+                                                                <!--end::Symbol-->
+                                                                <!--begin::Section-->
+                                                                <div class="me-2">
+                                                                    <a href="#"
+                                                                       class="text-gray-800 text-hover-primary fs-6 fw-bold">{{ p.nombre }}</a>
+                                                                    <span class="text-gray-400 fw-bold d-block fs-7">{{ p.marca }} - {{ p.modelo }}</span>
+                                                                </div>
+                                                                <!--end::Section-->
+                                                            </div>
+                                                            <!--end::Block-->
+                                                            <!--begin::Info-->
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="symbol symbol-50px me-4">
+                                                                    <a href="{% url 'dashboards:editar_parte' p.id %}?equipo_id={{ object_pk.id }}">
+
+                                                                    <span class="svg-icon svg-icon-2qx {% if p.tiene_campos_vacios_parte %} svg-icon-primary {% else %} svg-icon-success {% endif %}">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                             xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                                             width="24px"
+                                                                             height="24px" viewBox="0 0 24 24"
+                                                                             version="1.1"
+                                                                             class="kt-svg-icon">
+                                                                        <g stroke="none" stroke-width="1" fill="none"
+                                                                           fill-rule="evenodd">
+                                                                            <rect x="0" y="0" width="24" height="24"/>
+                                                                            <path d="M8,17.9148182 L8,5.96685884 C8,5.56391781 8.16211443,5.17792052 8.44982609,4.89581508 L10.965708,2.42895648 C11.5426798,1.86322723 12.4640974,1.85620921 13.0496196,2.41308426 L15.5337377,4.77566479 C15.8314604,5.0588212 16,5.45170806 16,5.86258077 L16,17.9148182 C16,18.7432453 15.3284271,19.4148182 14.5,19.4148182 L9.5,19.4148182 C8.67157288,19.4148182 8,18.7432453 8,17.9148182 Z"
+                                                                                  fill="currentColor"
+                                                                                  fill-rule="nonzero"
+                                                                                  transform="translate(12.000000, 10.707409) rotate(-135.000000) translate(-12.000000, -10.707409) "/>
+                                                                            <rect fill="currentColor" opacity="0.3"
+                                                                                  x="5" y="20"
+                                                                                  width="15" height="2" rx="1"/>
+                                                                        </g>
+                                                                    </svg>
+                                                                    </span>
+
+                                                                    </a>
+                                                                </div>
+                                                                <!--end::Info-->
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <div class="d-flex border border-gray-300 border-dashed rounded p-6 mb-6">
+                                                        <!--begin::Block-->
+                                                        <div class="d-flex align-items-center flex-grow-1 me-2 me-sm-5">
+                                                            <!--begin::Symbol-->
+                                                            <div class="symbol symbol-50px me-4">
+																				<span class="symbol-label">
+
+                                                                                    <span class="svg-icon svg-icon-2qx svg-icon-primary">
+																					<svg
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                                                            width="24px" height="24px"
+                                                                                            viewBox="0 0 24 24"
+                                                                                            version="1.1">
+                                                                                            <g stroke="none"
+                                                                                               stroke-width="1"
+                                                                                               fill="none"
+                                                                                               fill-rule="evenodd">
+                                                                                                <rect x="0" y="0"
+                                                                                                      width="24"
+                                                                                                      height="24"/>
+                                                                                                <path d="M12,22 C6.4771525,22 2,17.5228475 2,12 C2,6.4771525 6.4771525,2 12,2 C17.5228475,2 22,6.4771525 22,12 C22,17.5228475 17.5228475,22 12,22 Z M12,20 C16.418278,20 20,16.418278 20,12 C20,7.581722 16.418278,4 12,4 C7.581722,4 4,7.581722 4,12 C4,16.418278 7.581722,20 12,20 Z M19.0710678,4.92893219 L19.0710678,4.92893219 C19.4615921,5.31945648 19.4615921,5.95262146 19.0710678,6.34314575 L6.34314575,19.0710678 C5.95262146,19.4615921 5.31945648,19.4615921 4.92893219,19.0710678 L4.92893219,19.0710678 C4.5384079,18.6805435 4.5384079,18.0473785 4.92893219,17.6568542 L17.6568542,4.92893219 C18.0473785,4.5384079 18.6805435,4.5384079 19.0710678,4.92893219 Z"
+                                                                                                      fill="currentColor"
+                                                                                                      fill-rule="nonzero"
+                                                                                                      opacity="0.3"/>
+                                                                                            </g>
+                                                                                        </svg><!--end::Svg Icon-->
+                                                                                    </span>
+
+                                                                                    <!--end::Svg Icon-->
+																				</span>
+                                                            </div>
+                                                            <!--end::Symbol-->
+                                                            <!--begin::Section-->
+                                                            <div class="me-2">
+                                                                <a href="#"
+                                                                   class="text-gray-800 text-hover-primary fs-6 fw-bold">Este vehículo no tiene partes.</a>
+                                                            </div>
+                                                            <!--end::Section-->
+                                                        </div>
+
+                                                    </div>
+
+                                                {% endif %}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end::Wrapper-->
+                            </div>
+                            <div class="d-flex flex-stack pt-10">
+                                <!--begin::Wrapper-->
+                                <div class="mr-2">
+                                    <a href="{{ url_cancel }}" type="button" class="btn btn-lg btn-light-primary me-3"
+                                    >
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr063.svg-->
+                                        <span class="svg-icon svg-icon-4 me-1">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+																<rect opacity="0.5" x="6" y="11" width="13" height="2"
+                                                                      rx="1" fill="currentColor"/>
+																<path d="M8.56569 11.4343L12.75 7.25C13.1642 6.83579 13.1642 6.16421 12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75L5.70711 11.2929C5.31658 11.6834 5.31658 12.3166 5.70711 12.7071L11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25C13.1642 17.8358 13.1642 17.1642 12.75 16.75L8.56569 12.5657C8.25327 12.2533 8.25327 11.7467 8.56569 11.4343Z"
+                                                                      fill="currentColor"/>
+															</svg>
+														</span>
+                                        <!--end::Svg Icon-->Atras
+                                    </a>
+                                </div>
+                                <!--end::Wrapper-->
+                                <!--begin::Wrapper-->
+                                <div>
+                                    <a href="{% url 'dashboards:lista_equipo' %}" class="btn btn-lg btn-primary mx-2">
+                                        Finalizar
+                                    </a>
+
+                                </div>
+                                <!--end::Wrapper-->
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end::Form-->
+                    </div>
+                    <!--end::Content-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+    var cont = 0;
+        var mensaje = []
+        {% for m in messages %}
+            var nombre = '{{ m }}'
+            mensaje.push(nombre)
+        {% endfor %}
+    </script>
+{% endblock %}

@@ -9,6 +9,59 @@ from django.dispatch import receiver
 
 from _keenthemes.settings import MEDIA_URL, STATIC_URL
 
+def imagen_upload_to(instance, filename):
+    if isinstance(instance, Equipo):
+        return f'equipo/{instance.id}/{filename}'
+    elif isinstance(instance, Pieza):
+        return f'pieza/{instance.id}/{filename}'
+    elif isinstance(instance, Parte):
+        return f'parte/{instance.id}/{filename}'
+
+class Imagen(models.Model):
+    imagen = models.ImageField(upload_to='equipo/')
+
+    def __str__(self):
+        return self.imagen.name
+
+class Notificacion(models.Model):
+    history = AuditlogHistoryField()
+    asunto = models.CharField(max_length=500, verbose_name='Asunto')
+    mensaje = models.CharField(max_length=500, verbose_name='Mensaje')
+    estado = models.BooleanField(verbose_name='Estado',default=True,blank=True)
+    fecha_registro = models.DateField(auto_now_add=True, null=True, blank=True)
+    user = models.ManyToManyField(User,blank=True, related_name='notificaciones')
+
+    class Meta:
+        db_table = 'notificacion'
+        verbose_name = 'Notificacion'
+        verbose_name_plural = 'Notificaciones'
+        ordering = ['fecha_registro']
+
+    def __str__(self):
+        return self.asunto
+
+
+auditlog.register(Notificacion)
+
+
+class ListaCorreo(models.Model):
+    history = AuditlogHistoryField()
+    nombre = models.CharField(max_length=500, verbose_name='Nombre')
+    email = models.EmailField(max_length=500, verbose_name='Correo')
+
+    class Meta:
+        db_table = 'lista_correo'
+        verbose_name = 'ListaCorreo'
+        verbose_name_plural = 'ListaCorreos'
+        ordering = ['nombre']
+
+    def __str__(self):
+        return self.asunto
+
+auditlog.register(ListaCorreo)
+
+
+
 class Estado(models.Model):
     history = AuditlogHistoryField()
     nombre = models.CharField(max_length=50, verbose_name='Estado', unique=True)
@@ -275,8 +328,8 @@ auditlog.register(Insumo)
 
 class PropiedadInsumo(models.Model):
     history = AuditlogHistoryField()
-    insumo = models.ForeignKey(Insumo, verbose_name='Insumo', on_delete=models.PROTECT)
-    propiedad = models.ForeignKey(Propiedad, verbose_name='Propiedad', on_delete=models.PROTECT)
+    insumo = models.ForeignKey(Insumo, verbose_name='Insumo', on_delete=models.PROTECT,blank=True)
+    propiedad = models.ForeignKey(Propiedad, verbose_name='Propiedad', on_delete=models.PROTECT,blank=True)
     valor = models.CharField(verbose_name='Valor', max_length=100, blank=True, null=True)
     fecha_registro = models.DateField(auto_now_add=True, null=True, blank=True)
 
@@ -316,14 +369,32 @@ class Pieza(models.Model):
         if self.foto:
             return '{}{}'.format(MEDIA_URL, self.foto)
         else:
-            return '{}{}'.format(STATIC_URL, 'assets/media/empty.jpg')
+            return '{}{}'.format(STATIC_URL, 'media/empty.jpg')
+
+    def tiene_campos_vacios_pieza(self):
+        # Verificar si algún campo obligatorio está vacío
+        if (
+                not self.marca
+                or not self.modelo
+                or not self.categoria
+                or not self.nombre
+
+        ):
+            return True
+
+        # Verificar si alguna propiedad tiene un valor vacío
+        propiedades_vacias = PropiedadPieza.objects.filter(pieza=self, valor=None)
+        if propiedades_vacias.count() > 0:
+            return True
+
+        return False
 
 auditlog.register(Pieza)
 
 class PropiedadPieza(models.Model):
     history = AuditlogHistoryField()
-    pieza = models.ForeignKey(Pieza, verbose_name='Pieza', on_delete=models.PROTECT)
-    propiedad = models.ForeignKey(Propiedad, verbose_name='Propiedad', on_delete=models.PROTECT)
+    pieza = models.ForeignKey(Pieza, verbose_name='Pieza', on_delete=models.PROTECT,blank=True)
+    propiedad = models.ForeignKey(Propiedad, verbose_name='Propiedad', on_delete=models.PROTECT,blank=True)
     valor = models.CharField(verbose_name='Valor', max_length=100, blank=True, null=True)
     fecha_registro = models.DateField(auto_now_add=True, null=True, blank=True)
 
@@ -364,14 +435,33 @@ class Parte(models.Model):
         if self.foto:
             return '{}{}'.format(MEDIA_URL, self.foto)
         else:
-            return '{}{}'.format(STATIC_URL, 'assets/media/empty.jpg')
+            return '{}{}'.format(STATIC_URL, 'media/empty.jpg')
+
+    def tiene_campos_vacios_parte(self):
+        # Verificar si algún campo obligatorio está vacío
+        if (
+                not self.marca
+                or not self.modelo
+                or not self.categoria
+                or not self.nombre
+
+        ):
+            return True
+
+        # Verificar si alguna propiedad tiene un valor vacío
+        propiedades_vacias = PropiedadParte.objects.filter(parte=self, valor=None)
+        if propiedades_vacias.count() > 0:
+            return True
+
+        return False
+
 
 auditlog.register(Parte)
 
 class PropiedadParte(models.Model):
     history = AuditlogHistoryField()
-    parte = models.ForeignKey(Parte, verbose_name='Parte', on_delete=models.PROTECT)
-    propiedad = models.ForeignKey(Propiedad, verbose_name='Propiedad', on_delete=models.PROTECT)
+    parte = models.ForeignKey(Parte, verbose_name='Parte', on_delete=models.PROTECT,blank=True)
+    propiedad = models.ForeignKey(Propiedad, verbose_name='Propiedad', on_delete=models.PROTECT,blank=True)
     valor = models.CharField(verbose_name='Valor', max_length=100, blank=True, null=True)
     fecha_registro = models.DateField(auto_now_add=True, null=True, blank=True)
 
@@ -405,7 +495,8 @@ class Equipo(models.Model):
     partes = models.ManyToManyField(Parte, verbose_name='Parte', blank=True)
     # estado = models.CharField(verbose_name='Estado',max_length=11, choices=ESTADO_CHOICES)
     estado = models.ForeignKey(Estado, on_delete=models.SET_NULL,null=True,blank=True)
-    foto = models.ImageField(verbose_name='Imagenes',upload_to='Equipo/', null=True, blank=True)
+    # foto = models.ImageField(verbose_name='Imagenes',upload_to='Equipo/', null=True, blank=True)
+    fotos = models.ManyToManyField('Imagen', related_name='objetos',blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL,null=True)
     fecha_registro = models.DateField(auto_now_add=True,null=True,blank=True)
 
@@ -419,11 +510,28 @@ class Equipo(models.Model):
         return self.marca.nombre +' - '+ self.modelo.nombre
 
     def get_foto(self):
-        if self.foto:
-            return '{}{}'.format(MEDIA_URL, self.foto)
+        if self.fotos.count() > 0:
+            return '{}{}'.format(MEDIA_URL, self.fotos.first().imagen)
         else:
             return '{}{}'.format(STATIC_URL, 'media/empty.jpg')
 
+    def tiene_campos_vacios(self):
+        # Verificar si algún campo obligatorio está vacío
+        if (
+                not self.empresa_recibo
+                or not self.codigo
+                or not self.empresa
+                or not self.estado
+                or not self.chapa
+                or not self.descripcion
+        ):
+            return True
+
+        # Verificar si alguna propiedad tiene un valor vacío
+        if self.propiedades.filter(valor=''):
+            return True
+
+        return False
 
 auditlog.register(Equipo)
 
@@ -452,10 +560,15 @@ class UserPerfil(models.Model):
     history = AuditlogHistoryField()
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     empresa = models.ForeignKey(Empresa, on_delete=models.SET_NULL,null=True,blank=True)
-    email = models.EmailField(verbose_name='Correo',null=True,blank=True)
-
+    foto = models.ImageField(verbose_name='Foto', upload_to='perfil/', null=True, blank=True)
     def __str__(self):
         return self.user.username
+
+    def get_foto(self):
+        if self.foto:
+            return '{}{}'.format(MEDIA_URL, self.foto)
+        else:
+            return '{}{}'.format(STATIC_URL, 'media/empty_user.png')
 
 
 auditlog.register(UserPerfil)
@@ -464,3 +577,34 @@ auditlog.register(UserPerfil)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserPerfil.objects.create(user=instance)
+
+
+
+class CategoriaEquipoxPartes(models.Model):
+    history = AuditlogHistoryField()
+    categoriaequipo = models.ForeignKey(CategoriaEquipo, verbose_name='Categoria Equipo', on_delete=models.PROTECT,unique=True)
+    parte = models.ManyToManyField(Parte,verbose_name='Partes', blank=True)
+    fecha_registro = models.DateField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = 'categoriaequipo_x_partes'
+        verbose_name = 'Categoria Equipo x Partes'
+        verbose_name_plural = 'Categoria Equipo x Partes'
+
+    def __str__(self):
+        return self.categoriaequipo.nombre
+
+
+class CategoriaPartexPiezas(models.Model):
+    history = AuditlogHistoryField()
+    categoriaparte = models.ForeignKey(CategoriaParte, verbose_name='Parte', on_delete=models.PROTECT)
+    pieza = models.ManyToManyField(Pieza, verbose_name='Pieza', blank=True)
+    fecha_registro = models.DateField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = 'categoriaequipo_x_piezas'
+        verbose_name = 'Categoria Parte x Piezas'
+        verbose_name_plural = 'Categoria Parte x Piezas'
+
+    def __str__(self):
+        return self.categoriaparte.nombre

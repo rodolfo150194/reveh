@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" {% printHtmlAttributes 'html' %}>
+<!--begin::Head-->
+<head>
+    <title>{% block title %}{% endblock title %} - REVEH</title>
+    <meta charset="utf-8"/>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content=""/>
+    <link rel="canonical" href=""/>
+    <link rel="shortcut icon" href="{% includeFavicon %}"/>
+
+    {% block css %}
+        <!--begin::Fonts-->
+        {% includeFonts %}
+        <!--end::Fonts-->
+
+        <!--begin::Vendor Stylesheets(optional)-->
+        {% getVendors 'css' as vendors_css %}
+        {% for file in vendors_css %}
+            <link href="{{ file }}" rel="stylesheet" type="text/css"/>
+        {% endfor %}
+        <!--end::Vendor Stylesheets-->
+
+        <!--begin::Custom Stylesheets(optional)-->
+        {% getCustomCss as css %}
+        {% for file in css %}
+            <link href="{% static file %}" rel="stylesheet" type="text/css"/>
+        {% endfor %}
+        <!--end::Custom Stylesheets-->
+
+        <!--begin::Global Stylesheets(mandatory)-->
+        {% getGlobalAssets 'css' as assets_css %}
+        {% for file in assets_css %}
+            <link href="{% static file %}" rel="stylesheet" type="text/css"/>
+        {% endfor %}
+        <!--end::Global Stylesheets-->
+    {% endblock css %}
+
+    <!--begin::Tracking-->
+    <!--end::Tracking-->
+    {% load bootstrap5 %}
+</head>
+<body id="kt_app_body" data-kt-app-header-stacked="true" data-kt-app-header-primary-enabled="true"
+      data-kt-app-header-secondary-enabled="true" data-kt-app-toolbar-enabled="true" class="app-default">
+<script>
+    var defaultThemeMode = "dark";
+    var themeMode;
+    if (document.documentElement) {
+        if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
+            themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
+        } else {
+            if (localStorage.getItem("data-bs-theme") !== null) {
+                themeMode = localStorage.getItem("data-bs-theme");
+            } else {
+                themeMode = defaultThemeMode;
+            }
+        }
+        if (themeMode === "system") {
+            themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-bs-theme", themeMode);
+    }
+</script>
+{% include 'partials/theme-mode/_init.html' %}
+<div class="app-container container-xxl d-flex">
+    <!--begin::Main-->
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content px-0">
+                <div class="container mt-10">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <div class="card-title py-5 px-lg-17">
+                                <h2 class="fw-bold">Nuevo {{ field }}</h2>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-sm-12">
+                                <form enctype="multipart/form-data" method="POST" action="" class="form-horizontal"
+                                      role="form">
+                                    {% csrf_token %}
+                                    {% bootstrap_form form %}
+                                    {% buttons %}
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-primary font-weight-bold">Agregar
+                                            </button>
+                                            <a class="btn btn-light-primary font-weight-bold"
+                                               href="javascript:window.close()">Cancelar</a>
+                                        </div>
+                                    {% endbuttons %}
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block javascript %}
+        <!--begin::Global Javascript(mandatory)-->
+        {% getGlobalAssets 'js' as assets_js %}
+        {% for file in assets_js %}
+            <script src="{% static file %}"></script>
+        {% endfor %}
+        <!--end::Global Javascript-->
+
+        <!--begin::Vendors Javascript(optional)-->
+        {% getVendors 'js' as vendors_js %}
+        {% for file in vendors_js %}
+            <script src="{{ file }}"></script>
+        {% endfor %}
+        <!--end::Vendors Javascript-->
+
+        <!--begin::Custom Javascript(optional)-->
+        {% getCustomJs as js %}
+        {% for file in js %}
+            <script src="{% static file %}"></script>
+        {% endfor %}
+        <!--end::Custom Javascript-->
+    {% endblock javascript %}
+
+</body>
+</html>

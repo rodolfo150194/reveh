@@ -1,43 +1,45 @@
 <div class="menu menu-rounded menu-active-bg menu-state-primary menu-column menu-lg-row menu-title-gray-700 menu-icon-gray-500 menu-arrow-gray-500 menu-bullet-gray-500 my-5 my-lg-0 align-items-stretch fw-semibold px-2 px-lg-0"
-                                         id="kt_app_header_menu" data-kt-menu="true">
-                                        <!--begin:Menu item-->
-                                        <div class="menu-item here show menu-here-bg menu-lg-down-accordion me-0 me-lg-2">
-                                            <!--begin:Menu link-->
-                                            <span class="menu-link">
+     id="kt_app_header_menu" data-kt-menu="true">
+    <!--begin:Menu item-->
+    <div class="menu-item here show menu-here-bg menu-lg-down-accordion me-0 me-lg-2">
+        <!--begin:Menu link-->
+        <span class="menu-link">
 													<a href="{% url 'inicio' %}" class="menu-title">Inicio</a>
 													<span class="menu-arrow d-lg-none"></span>
 												</span>
 
-                                        </div>
-                                        <!--end:Menu item-->
-                                        <!--begin:Menu item-->
-                                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                                             data-kt-menu-placement="bottom-start"
-                                             class="menu-item menu-lg-down-accordion me-0 me-lg-2">
-                                            <!--begin:Menu link-->
-                                            <span class="menu-link">
+    </div>
+    <!--end:Menu item-->
+    <!--begin:Menu item-->
+    {% if perms.dashboards.view_equipo %}
+        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+             data-kt-menu-placement="bottom-start"
+             class="menu-item menu-lg-down-accordion me-0 me-lg-2">
+            <!--begin:Menu link-->
+            <span class="menu-link">
 													<span class="menu-title">Vehiculos</span>
 													<span class="menu-arrow d-lg-none"></span>
 												</span>
-                                            <!--end:Menu link-->
-                                            <!--begin:Menu sub-->
-                                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown p-0 w-100 w-lg-850px">
-                                                <!--begin:Dashboards menu-->
-                                                <div class="menu-state-bg menu-extended overflow-hidden overflow-lg-visible"
-                                                     data-kt-menu-dismiss="true">
-                                                    <!--begin:Row-->
-                                                    <div class="row">
-                                                        <!--begin:Col-->
-                                                        <div class="col-lg-12 mb-3 mb-lg-0 py-3 px-3 py-lg-6 px-lg-6">
-                                                            <!--begin:Row-->
-                                                            <div class="row">
-                                                                <!--begin:Col-->
-                                                                <div class="col-lg-6 mb-3">
-                                                                    <!--begin:Menu item-->
-                                                                    <div class="menu-item p-0 m-0">
-                                                                        <!--begin:Menu link-->
-                                                                        <a href="{% url 'dashboards:lista_equipo' %}"
-                                                                           class="menu-link {% if 'equipo' in request.path %}active{% endif %}">
+            <!--end:Menu link-->
+            <!--begin:Menu sub-->
+            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown p-0 w-100 w-lg-850px">
+                <!--begin:Dashboards menu-->
+                <div class="menu-state-bg menu-extended overflow-hidden overflow-lg-visible"
+                     data-kt-menu-dismiss="true">
+                    <!--begin:Row-->
+                    <div class="row">
+                        <!--begin:Col-->
+                        <div class="col-lg-12 mb-3 mb-lg-0 py-3 px-3 py-lg-6 px-lg-6">
+                            <!--begin:Row-->
+                            <div class="row">
+                                <!--begin:Col-->
+                                {% if perms.dashboards.view_equipo %}
+                                    <div class="col-lg-6 mb-3">
+                                        <!--begin:Menu item-->
+                                        <div class="menu-item p-0 m-0">
+                                            <!--begin:Menu link-->
+                                            <a href="{% url 'dashboards:lista_equipo' %}"
+                                               class="menu-link {% if 'equipo' in request.path %}active{% endif %}">
 																				<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
 																					<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 																					<span class="svg-icon svg-icon-primary svg-icon-1">
@@ -64,22 +66,22 @@
 																					</span>
                                                                                     <!--end::Svg Icon-->
 																				</span>
-                                                                            <span class="d-flex flex-column">
+                                                <span class="d-flex flex-column">
 																					<span class="fs-6 fw-bold text-gray-800">Vehiculos</span>
 																					<span class="fs-7 fw-semibold text-muted">Listado de todos los vehiculos</span>
 																				</span>
-                                                                        </a>
-                                                                        <!--end:Menu link-->
-                                                                    </div>
-                                                                    <!--end:Menu item-->
-                                                                </div>
-
-                                                                <div class="col-lg-6 mb-3">
-                                                                    <!--begin:Menu item-->
-                                                                    <div class="menu-item p-0 m-0">
-                                                                        <!--begin:Menu link-->
-                                                                        <a href="{% url 'dashboards:reporte_equipo' %}"
-                                                                           class="menu-link {% if 'reporte' in request.path %}active{% endif %}">
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <!--end:Menu item-->
+                                    </div>
+                                {% else %}{% endif %}
+                                <div class="col-lg-6 mb-3">
+                                    <!--begin:Menu item-->
+                                    <div class="menu-item p-0 m-0">
+                                        <!--begin:Menu link-->
+                                        <a href="{% url 'dashboards:reporte_equipo' %}"
+                                           class="menu-link {% if 'reporte' in request.path %}active{% endif %}">
 																				<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
 																					<!--begin::Svg Icon | path: icons/duotune/graphs/gra001.svg-->
 																					<span class="svg-icon svg-icon-dark svg-icon-1">
@@ -96,57 +98,60 @@
 																					</span>
                                                                                     <!--end::Svg Icon-->
 																				</span>
-                                                                            <span class="d-flex flex-column">
+                                            <span class="d-flex flex-column">
 																					<span class="fs-6 fw-bold text-gray-800">Reportes</span>
 																					<span class="fs-7 fw-semibold text-muted">Filtrado y graficas</span>
 																				</span>
-                                                                        </a>
-                                                                        <!--end:Menu link-->
-                                                                    </div>
-                                                                    <!--end:Menu item-->
-                                                                </div>
+                                        </a>
+                                        <!--end:Menu link-->
+                                    </div>
+                                    <!--end:Menu item-->
+                                </div>
 
-                                                            </div>
-                                                            <!--end:Row-->
+                            </div>
+                            <!--end:Row-->
 
-                                                            <!--end:Landing-->
-                                                        </div>
-                                                        <!--end:Col-->
-                                                        <!--begin:Col-->
+                            <!--end:Landing-->
+                        </div>
+                        <!--end:Col-->
+                        <!--begin:Col-->
 
-                                                    </div>
-                                                    <!--end:Row-->
-                                                </div>
-                                                <!--end:Dashboards menu-->
-                                            </div><!--end:Menu sub-->
-                                        </div>
-                                        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
-                                             data-kt-menu-placement="bottom-start"
-                                             class="menu-item menu-lg-down-accordion me-0 me-lg-2">
-                                            <!--begin:Menu link-->
-                                            <span class="menu-link">
+                    </div>
+                    <!--end:Row-->
+                </div>
+                <!--end:Dashboards menu-->
+            </div><!--end:Menu sub-->
+        </div>
+    {% else %}{% endif %}
+    {% if perms.dashboards.view_pieza or perms.dashboards.view.parte %}
+        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+             data-kt-menu-placement="bottom-start"
+             class="menu-item menu-lg-down-accordion me-0 me-lg-2">
+            <!--begin:Menu link-->
+            <span class="menu-link">
 													<span class="menu-title">Complementos</span>
 													<span class="menu-arrow d-lg-none"></span>
 												</span>
-                                            <!--end:Menu link-->
-                                            <!--begin:Menu sub-->
-                                            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown p-0 w-100 w-lg-850px">
-                                                <!--begin:Dashboards menu-->
-                                                <div class="menu-state-bg menu-extended overflow-hidden overflow-lg-visible"
-                                                     data-kt-menu-dismiss="true">
-                                                    <!--begin:Row-->
-                                                    <div class="row">
-                                                        <!--begin:Col-->
-                                                        <div class="col-lg-12 mb-3 mb-lg-0 py-3 px-3 py-lg-6 px-lg-6">
-                                                            <!--begin:Row-->
-                                                            <div class="row">
-                                                                <!--begin:Col-->
-                                                                <div class="col-lg-6 mb-3">
-                                                                    <!--begin:Menu item-->
-                                                                    <div class="menu-item p-0 m-0">
-                                                                        <!--begin:Menu link-->
-                                                                        <a href="{% url 'dashboards:lista_pieza' %}"
-                                                                           class="menu-link {% if 'pieza' in request.path %}active{% endif %}">
+            <!--end:Menu link-->
+            <!--begin:Menu sub-->
+            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown p-0 w-100 w-lg-850px">
+                <!--begin:Dashboards menu-->
+                <div class="menu-state-bg menu-extended overflow-hidden overflow-lg-visible"
+                     data-kt-menu-dismiss="true">
+                    <!--begin:Row-->
+                    <div class="row">
+                        <!--begin:Col-->
+                        <div class="col-lg-12 mb-3 mb-lg-0 py-3 px-3 py-lg-6 px-lg-6">
+                            <!--begin:Row-->
+                            <div class="row">
+                                <!--begin:Col-->
+                                {% if perms.dashboards.view_pieza %}
+                                    <div class="col-lg-6 mb-3">
+                                        <!--begin:Menu item-->
+                                        <div class="menu-item p-0 m-0">
+                                            <!--begin:Menu link-->
+                                            <a href="{% url 'dashboards:lista_pieza' %}"
+                                               class="menu-link {% if 'pieza' in request.path %}active{% endif %}">
 																				<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
 																					<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
 																					<span class="svg-icon svg-icon-primary svg-icon-1">
@@ -173,22 +178,23 @@
 																					</span>
                                                                                     <!--end::Svg Icon-->
 																				</span>
-                                                                            <span class="d-flex flex-column">
+                                                <span class="d-flex flex-column">
 																					<span class="fs-6 fw-bold text-gray-800">Piezas</span>
 																					<span class="fs-7 fw-semibold text-muted">Listado de todos las piezas</span>
 																				</span>
-                                                                        </a>
-                                                                        <!--end:Menu link-->
-                                                                    </div>
-                                                                    <!--end:Menu item-->
-                                                                </div>
-
-                                                                <div class="col-lg-6 mb-3">
-                                                                    <!--begin:Menu item-->
-                                                                    <div class="menu-item p-0 m-0">
-                                                                        <!--begin:Menu link-->
-                                                                        <a href="{% url 'dashboards:lista_parte' %}"
-                                                                           class="menu-link {% if 'parte' in request.path %}active{% endif %}">
+                                            </a>
+                                            <!--end:Menu link-->
+                                        </div>
+                                        <!--end:Menu item-->
+                                    </div>
+                                {% else %}{% endif %}
+                                {% if perms.dashboards.view_parte %}
+                                    <div class="col-lg-6 mb-3">
+                                        <!--begin:Menu item-->
+                                        <div class="menu-item p-0 m-0">
+                                            <!--begin:Menu link-->
+                                            <a href="{% url 'dashboards:lista_parte' %}"
+                                               class="menu-link {% if 'parte' in request.path %}active{% endif %}">
 																				<span class="menu-custom-icon d-flex flex-center flex-shrink-0 rounded w-40px h-40px me-3">
 																					<!--begin::Svg Icon | path: icons/duotune/graphs/gra001.svg-->
 																					<span class="svg-icon svg-icon-success svg-icon-1">
@@ -215,41 +221,42 @@
 																					</span>
                                                                                     <!--end::Svg Icon-->
 																				</span>
-                                                                            <span class="d-flex flex-column">
+                                                <span class="d-flex flex-column">
 																					<span class="fs-6 fw-bold text-gray-800">Parte</span>
 																					<span class="fs-7 fw-semibold text-muted">Listado de todas las piezas</span>
 																				</span>
-                                                                        </a>
-                                                                        <!--end:Menu link-->
-                                                                    </div>
-                                                                    <!--end:Menu item-->
-                                                                </div>
-
-                                                            </div>
-                                                            <!--end:Row-->
-                                                            <div class="separator separator-dashed mx-5 my-5"></div>
-                                                            <!--begin:Landing-->
-                                                            <div class="d-flex flex-stack flex-wrap flex-lg-nowrap gap-2 mx-5">
-                                                                <div class="d-flex flex-column me-5">
-                                                                    <div class="fs-6 fw-bold text-gray-800">Reportes
-                                                                    </div>
-                                                                    <div class="fs-7 fw-semibold text-muted">Obtenga graficos y reportes
-                                                                    </div>
-                                                                </div>
-                                                                <a href="../../demo48/dist/landing.html"
-                                                                   class="btn btn-sm btn-primary fw-bold">Entrar</a>
-                                                            </div>
-                                                            <!--end:Landing-->
-                                                        </div>
-                                                        <!--end:Col-->
-                                                        <!--begin:Col-->
-
-                                                    </div>
-                                                    <!--end:Row-->
-                                                </div>
-                                                <!--end:Dashboards menu-->
-                                            </div><!--end:Menu sub-->
+                                            </a>
+                                            <!--end:Menu link-->
                                         </div>
-
-
+                                        <!--end:Menu item-->
                                     </div>
+                                {% else %}{% endif %}
+                            </div>
+                            <!--end:Row-->
+                            {#                        <div class="separator separator-dashed mx-5 my-5"></div>#}
+                            {#                        <!--begin:Landing-->#}
+                            {#                        <div class="d-flex flex-stack flex-wrap flex-lg-nowrap gap-2 mx-5">#}
+                            {#                            <div class="d-flex flex-column me-5">#}
+                            {#                                <div class="fs-6 fw-bold text-gray-800">Reportes#}
+                            {#                                </div>#}
+                            {#                                <div class="fs-7 fw-semibold text-muted">Obtenga graficos y reportes#}
+                            {#                                </div>#}
+                            {#                            </div>#}
+                            {#                            <a href="../../demo48/dist/landing.html"#}
+                            {#                               class="btn btn-sm btn-primary fw-bold">Entrar</a>#}
+                            {#                        </div>#}
+                            <!--end:Landing-->
+                        </div>
+                        <!--end:Col-->
+                        <!--begin:Col-->
+
+                    </div>
+                    <!--end:Row-->
+                </div>
+                <!--end:Dashboards menu-->
+            </div><!--end:Menu sub-->
+        </div>
+    {% else %}{% endif %}
+
+
+</div>

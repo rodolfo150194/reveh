@@ -1,0 +1,415 @@
+{% extends layout %}
+{% load static i18n %}
+{% load bootstrap5 widget_tweaks %}
+{% block title %}
+    {{ title_html }}
+{% endblock title %}
+{% block breadcumb %}
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        <a href="{% url 'inicio' %}" class="text-white">
+            Inicio
+        </a>
+    </li>
+    <!--end::Item-->
+    <!--begin::Item-->
+
+    <!--end::Item-->
+    <!--begin::Item-->
+    <li class="breadcrumb-item">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+        <span class="svg-icon svg-icon-5 svg-icon-gray-700 mx-n2">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+													<path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z"
+                                                          fill="currentColor"/>
+												</svg>
+											</span>
+        <!--end::Svg Icon-->
+    </li>
+
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        {{ breadcumb_lista }}
+    </li>
+
+{% endblock %}
+{% block content %}
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content px-0">
+                <!--begin::Navbar-->
+                <div class="card mb-5 mb-xxl-8">
+                    <div class="card-body pt-9 pb-0">
+                        <!--begin::Details-->
+                        <div class="d-flex flex-wrap flex-sm-nowrap">
+
+                            <div class="flex-grow-1">
+                                <!--begin::Title-->
+                                <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+                                    <!--begin::User-->
+                                    <div class="d-flex flex-column">
+                                        <!--begin::Name-->
+                                        <div class="d-flex align-items-center mb-2">
+                                            <a href="#"
+                                               class="text-gray-900 text-hover-primary fs-2 fw-bold me-1">{{ equipo.marca.nombre }}
+                                                - {{ equipo.modelo.nombre }}</a>
+                                            <a href="#">
+                                                <!--begin::Svg Icon | path: icons/duotune/general/gen026.svg-->
+                                                <span class="svg-icon svg-icon-1 svg-icon-primary">
+																		<svg xmlns="http://www.w3.org/2000/svg"
+                                                                             width="24px" height="24px"
+                                                                             viewBox="0 0 24 24">
+																			<path d="M10.0813 3.7242C10.8849 2.16438 13.1151 2.16438 13.9187 3.7242V3.7242C14.4016 4.66147 15.4909 5.1127 16.4951 4.79139V4.79139C18.1663 4.25668 19.7433 5.83365 19.2086 7.50485V7.50485C18.8873 8.50905 19.3385 9.59842 20.2758 10.0813V10.0813C21.8356 10.8849 21.8356 13.1151 20.2758 13.9187V13.9187C19.3385 14.4016 18.8873 15.491 19.2086 16.4951V16.4951C19.7433 18.1663 18.1663 19.7433 16.4951 19.2086V19.2086C15.491 18.8873 14.4016 19.3385 13.9187 20.2758V20.2758C13.1151 21.8356 10.8849 21.8356 10.0813 20.2758V20.2758C9.59842 19.3385 8.50905 18.8873 7.50485 19.2086V19.2086C5.83365 19.7433 4.25668 18.1663 4.79139 16.4951V16.4951C5.1127 15.491 4.66147 14.4016 3.7242 13.9187V13.9187C2.16438 13.1151 2.16438 10.8849 3.7242 10.0813V10.0813C4.66147 9.59842 5.1127 8.50905 4.79139 7.50485V7.50485C4.25668 5.83365 5.83365 4.25668 7.50485 4.79139V4.79139C8.50905 5.1127 9.59842 4.66147 10.0813 3.7242V3.7242Z"
+                                                                                  fill="currentColor"/>
+																			<path d="M14.8563 9.1903C15.0606 8.94984 15.3771 8.9385 15.6175 9.14289C15.858 9.34728 15.8229 9.66433 15.6185 9.9048L11.863 14.6558C11.6554 14.9001 11.2876 14.9258 11.048 14.7128L8.47656 12.4271C8.24068 12.2174 8.21944 11.8563 8.42911 11.6204C8.63877 11.3845 8.99996 11.3633 9.23583 11.5729L11.3706 13.4705L14.8563 9.1903Z"
+                                                                                  fill="white"/>
+																		</svg>
+																	</span>
+                                                <!--end::Svg Icon-->
+                                            </a>
+                                        </div>
+                                        <!--end::Name-->
+
+                                        <!--end::Info-->
+                                    </div>
+                                    <!--end::User-->
+                                    <!--begin::Actions-->
+                                    <div class="d-flex my-4">
+                                        <a href="{% url 'dashboards:generar_pdf_equipo' equipo.id %}"
+                                           class="btn btn-sm btn-light me-2" id="kt_user_follow_button">
+
+                                            <span class="indicator-label">Exportar</span>
+                                            <!--end::Indicator label-->
+                                            <!--begin::Indicator progress-->
+                                            <span class="indicator-progress">Please wait...
+																<span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                                            <!--end::Indicator progress-->
+                                        </a>
+
+                                        <!--end::Menu-->
+                                    </div>
+                                    <!--end::Actions-->
+                                </div>
+
+                                <div class="d-flex justify-content-center">
+                                    <table class="table  table-bordered">
+                                        <tr>
+                                            <td colspan="1" rowspan="5" class="w-25">
+                                                <div class="d-flex justify-content-center mt-lg-0 mt-3 text-center">
+                                                    <div class="symbol symbol-70px symbol-lg-160px symbol-fixed position-relative">
+
+                                                        <img src="{{ equipo.get_foto }}" alt="image"/>
+                                                        {#                                                        <div class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-body h-20px w-20px"></div>#}
+                                                    </div>
+
+                                                </div>
+                                            </td>
+                                            <td colspan="2" class="table-active text-center">
+                                                <strong>{{ equipo.nombre |upper }}</strong>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td><strong>CATEGORIA</strong></td>
+                                            <td class="text-center">{{ equipo.categoria.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>EMRPESA</strong></td>
+                                            <td class="text-center">{{ equipo.empresa.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>CHAPA</strong></td>
+                                            <td class="text-center">{{ equipo.chapa | default_if_none:'' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>ESTADO</strong></td>
+                                            <td class="text-center">{{ equipo.estado }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3"><strong>DESCRIPCION</strong></td>
+
+                                        </tr>
+                                        <tr>
+
+                                            <td colspan="3">{{ equipo.descripcion }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" id="text_center" class="text-center table-active">
+                                                <strong>PROPIEDADES -
+                                                    VALOR</strong></td>
+                                        </tr>
+                                        {% if equipo.propiedadequipo_set.all.count > 0 %}
+                                            {% for p in equipo.propiedadequipo_set.all %}
+                                                <tr {% if forloop.first %}style="padding-top:3px" {% endif %}>
+                                                    <td colspan="2">
+                                                        <strong>{{ p.propiedad.nombre | upper }}</strong></td>
+                                                    {% if p.valor is None %}
+                                                        <td class="text-center" colspan="1">---</td>
+                                                    {% elif p.valor %}
+                                                        <td colspan="1"
+                                                            class="text-center">{{ p.valor | upper }}</td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="3" class="text-center">Este quipo no tiene
+                                                    propiedades
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                            </div>
+                            <!--end::Stats-->
+                        </div>
+                        <!--end::Info-->
+
+
+                    </div>
+                </div>
+                <!--end::Navbar-->
+                <!--begin::Row-->
+                <div class="row g-5 g-xxl-8">
+                    <!--begin::Col-->
+                    <div class="col-xl-12">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td class="text-center fs-4">Partes</td>
+                            </tr>
+                        </table>
+                        <!--begin::Feeds Widget 1-->
+                        <div class="card mb-5 mb-xxl-8">
+                            <!--begin::Body-->
+                            <div class="card-body pb-0">
+                                <div class="mb-5 hover-scroll-x">
+                                    <div class="d-grid">
+                                        <ul class="nav nav-tabs flex-nowrap text-nowrap">
+                                            {% for p in equipo.partes.all %}
+                                                <li class="nav-item">
+                                                    <a class="nav-link btn btn-active-light border btn-color-gray-600 btn-active-color-primary rounded-bottom-0"
+                                                       data-bs-toggle="tab" href="#tab_{{ p.id }}">
+                                                    <span class="d-flex flex-column align-items-start">
+                                                        <span class="fs-4 fw-bold">{{ p.nombre }}</span>
+                                                    </span>
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="tab-content p-5" id="myTabContent">
+                                    {% if equipo.partes.all.count > 0 %}
+                                        {% for parte in equipo.partes.all %}
+                                            <div class="tab-pane fade show {% if forloop.first %}active{% else %}{% endif %}"
+                                                 id="tab_{{ parte.id }}" role="tabpanel">
+                                                <div class="d-flex justify-content-center">
+                                                    <table class="table  table-bordered">
+                                                        <tr>
+                                                            <td colspan="1" rowspan="4" class="w-25">
+                                                                <div class="d-flex justify-content-center mt-lg-0 mt-3 text-center">
+                                                                    <div class="symbol symbol-70px symbol-lg-160px symbol-fixed position-relative">
+                                                                        <img src="{{ parte.get_foto }}" alt="image"/>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td colspan="2" class="table-active text-center">
+                                                                <a href="#{{ parte.id }}_pieza">
+                                                                    <h5 class="text-center font-weight-bold link_to_tab">{{ parte.nombre | upper }}</h5>
+                                                                    {#                                                                <i class="flaticon2-correct text-success font-size-h5"></i>#}
+                                                                </a>
+
+                                                            </td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>CATEGORIA</strong></td>
+                                                            <td class="text-center">{{ parte.categoria.nombre | upper }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>MODELO</strong></td>
+                                                            <td class="text-center">{{ parte.modelo.nombre | upper }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>MARCA</strong></td>
+                                                            <td class="text-center">{{ parte.marca.nombre | upper }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3"><strong>DESCRIPCION</strong></td>
+
+                                                        </tr>
+                                                        <tr>
+
+                                                            <td colspan="3">{{ parte.descripcion }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3" id="text_center"
+                                                                class="text-center table-active">
+                                                                <strong>PROPIEDADES -
+                                                                    VALOR</strong></td>
+                                                        </tr>
+                                                        {% if parte.propiedadparte_set.all.count > 0 %}
+                                                            {% for p in parte.propiedadparte_set.all %}
+                                                                <tr {% if forloop.first %}style="padding-top:3px" {% endif %}>
+                                                                    <td colspan="2">
+                                                                        <strong>{{ p.propiedad.nombre | upper }}</strong>
+                                                                    </td>
+                                                                    {% if p.valor is None %}
+                                                                        <td class="text-center" colspan="1">---</td>
+                                                                    {% elif p.valor %}
+                                                                        <td colspan="1"
+                                                                            class="text-center">{{ p.valor | upper }}</td>
+                                                                    {% endif %}
+                                                                </tr>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            <tr>
+                                                                <td colspan="3" class="text-center">Esta parte no tiene
+                                                                    propiedades
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            {% if parte.piezas.all.count > 0 %}
+                                                {% if forloop.first %}
+                                                    <table class="table table-bordered">
+                                                        <tr>
+                                                            <td class="text-center fs-4">Piezas
+                                                                de {{ parte.nombre }}</td>
+                                                        </tr>
+                                                    </table>
+                                                {% else %}
+                                                {% endif %}
+
+                                                <div class="accordion" id="kt_accordion_1">
+                                                    {% for pi in parte.piezas.all %}
+                                                        <div class="accordion-item">
+                                                            <h2 class="accordion-header" id="kt_accordion_{{ pi.id }}">
+                                                                <button class="accordion-button fs-4 fw-semibold"
+                                                                        type="button"
+                                                                        data-bs-toggle="collapse"
+                                                                        data-bs-target="#kt_accordion_{{ pi.nombre }}"
+                                                                        aria-expanded="true"
+                                                                        aria-controls="kt_accordion_1">
+                                                                    {{ pi.nombre }}
+                                                                </button>
+                                                            </h2>
+                                                            <div id="kt_accordion_{{ pi.nombre }}"
+                                                                 class="accordion-collapse collapse"
+                                                                 aria-labelledby="kt_accordion_{{ pi.id }}"
+                                                                 data-bs-parent="#kt_accordion_1">
+                                                                <div class="accordion-body">
+                                                                    <div class="d-flex justify-content-center">
+                                                                        <table class="table  table-bordered">
+
+                                                                            <tr>
+                                                                                <td colspan="1" rowspan="4"
+                                                                                    class="w-25">
+                                                                                    <div class="d-flex justify-content-center mt-lg-0 mt-3 text-center">
+                                                                                        <div class="symbol symbol-70px symbol-lg-160px symbol-fixed position-relative">
+                                                                                            <img src="{{ pi.get_foto }}"
+                                                                                                 alt="image"/>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td colspan="2"
+                                                                                    class="table-active text-center">
+                                                                                    <a href="#{{ pi.id }}_pieza">
+                                                                                        <h5 class="text-center font-weight-bold link_to_tab">{{ pi.nombre | upper }}</h5>
+                                                                                        {#                                                                <i class="flaticon2-correct text-success font-size-h5"></i>#}
+                                                                                    </a>
+
+                                                                                </td>
+
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>CATEGORIA</strong></td>
+                                                                                <td class="text-center">{{ pi.categoria.nombre | upper }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>MODELO</strong></td>
+                                                                                <td class="text-center">{{ pi.modelo.nombre | upper }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td><strong>MARCA</strong></td>
+                                                                                <td class="text-center">{{ pi.marca.nombre | upper }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="3">
+                                                                                    <strong>DESCRIPCION</strong>
+                                                                                </td>
+
+                                                                            </tr>
+                                                                            <tr>
+
+                                                                                <td colspan="3">{{ pi.descripcion }}</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td colspan="3" id="text_center"
+                                                                                    class="text-center table-active">
+                                                                                    <strong>PROPIEDADES -
+                                                                                        VALOR</strong></td>
+                                                                            </tr>
+                                                                            {% if pi.propiedadpieza_set.all.count > 0 %}
+                                                                                {% for p in parte.propiedadpieza_set.all %}
+                                                                                    <tr {% if forloop.first %}style="padding-top:3px" {% endif %}>
+                                                                                        <td colspan="2">
+                                                                                            <strong>{{ p.propiedad.nombre | upper }}</strong>
+                                                                                        </td>
+                                                                                        {% if p.valor is None %}
+                                                                                            <td class="text-center"
+                                                                                                colspan="1">---
+                                                                                            </td>
+                                                                                        {% elif p.valor %}
+                                                                                            <td colspan="1"
+                                                                                                class="text-center">{{ p.valor | upper }}</td>
+                                                                                        {% endif %}
+                                                                                    </tr>
+                                                                                {% endfor %}
+                                                                            {% else %}
+                                                                                <tr>
+                                                                                    <td colspan="3" class="text-center">
+                                                                                        Esta
+                                                                                        pieza no tiene
+                                                                                        propiedades
+                                                                                    </td>
+                                                                                </tr>
+                                                                            {% endif %}
+                                                                        </table>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-center">Este vehículo no tiene partes asignadas</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!--end::Body-->
+                        </div>
+                    </div>
+                    <!--end::Col-->
+
+                    <!--end::Col-->
+                </div>
+                <!--end::Row-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Content wrapper-->
+        <!--begin::Footer-->
+
+        <!--end::Footer-->
+    </div>
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% load static %}
+{% load bootstrap5 %}
+{% load i18n %}
+<!DOCTYPE html>
+<!--[if IE 9 ]>
+<html class="ie9"><![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Agregar {{ field }}{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"/>
+    {#    <link rel="stylesheet" href="{% static 'assets/fonts/poppins-medium-webfont.woff' %}" />#}
+    <!--end::Fonts-->
+    <!--begin::Page Vendors Styles(used by this page)-->
+    <link href="{% static 'assets/plugins/custom/fullcalendar/fullcalendar.bundle.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <!--end::Page Vendors Styles-->
+    <!--begin::Global Theme Styles(used by all pages)-->
+    <link href="{% static 'assets/plugins/global/plugins.bundle.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/plugins/custom/prismjs/prismjs.bundle.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/css/style.bundle.css' %}" rel="stylesheet" type="text/css"/>
+    <!--end::Global Theme Styles-->
+    <!--begin::Layout Themes(used by all pages)-->
+    <link href="{% static 'assets/css/themes/layout/header/base/light.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/css/themes/layout/header/menu/light.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/css/themes/layout/brand/dark.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/css/themes/layout/aside/dark.css' %}" rel="stylesheet" type="text/css"/>
+    {% block extra_css %}{% endblock extra_css %}
+    <!--end::Layout Themes-->
+    <link rel="shortcut icon" href="{% static 'assets/media/logos/favicon.ico' %}"/>
+</head>
+
+<body style="background-color: #ffffff;">
+<div class="container">
+    <div class="card">
+        <div class="card-header ch-alt m-b-20 bgm-green">
+            <h2>Agregar {{ field }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="col-sm-12">
+                <form enctype="multipart/form-data" method="POST" action="/add/{{ field }}/" class="form-horizontal"
+                      role="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary">Agregar</button> |
+                        <a href="javascript:window.close()">Cancelar</a>
+                    {% endbuttons %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'assets/plugins/global/plugins.bundle.js' %}"></script>
+<script src="{% static 'assets/plugins/custom/prismjs/prismjs.bundle.js' %}"></script>
+<script src="{% static 'assets/js/scripts.bundle.js' %}"></script>
+<!--end::Global Theme Bundle-->
+<!--begin::Page Vendors(used by this page)-->
+<script src="{% static 'assets/plugins/custom/fullcalendar/fullcalendar.bundle.js' %}"></script>
+<!--end::Page Vendors-->
+<!--begin::Page Scripts(used by this page)-->
+<script src="{% static 'assets/js/pages/widgets.js' %}"></script>
+<script type="text/javascript">
+    $(function () {
+        $(":file").fileinput({'showUpload': false, 'previewFileType': 'any'});
+    });
+</script>
+</body>
+</html>

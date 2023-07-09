@@ -27,7 +27,7 @@
         <th class="min-w-125px">Chapa</th>
         <th class="min-w-125px">Categoria</th>
         <th class="min-w-125px">Estado</th>
-        <th class="min-w-125px">Propiedades</th>
+        {#        <th class="min-w-125px">Propiedades</th>#}
         <th class="text-end min-w-100px">Acciones</th>
     </tr>
 {% endblock th %}
@@ -47,41 +47,43 @@
                 <div class="d-flex align-items-center">
 
                     <div class="symbol symbol-50 flex-shrink-0 mx-2">
-                   <img src="{{ element.get_foto }}" alt="photo">
-                                        </div>
+
+                        <img src="{{ element.get_foto }}" alt="photo">
+                    </div>
 
                     <div class="ml-3">
                       <span
-                            class="text-dark-75 font-weight-bold line-height-sm d-block pb-2">{{ element.nombre }}</span>
-                                        {#                        <a href="#" class="text-muted text-hover-primary">` + full[3] + `</a>#}
-                                </div>
-                                  </div>
-                           </td>
+                              class="text-dark-75 font-weight-bold line-height-sm d-block pb-2">{{ element.nombre }}</span>
+                        {#                        <a href="#" class="text-muted text-hover-primary">` + full[3] + `</a>#}
+                    </div>
+                </div>
+            </td>
             <td>{{ element.marca }}</td>
             <td>{{ element.modelo }}</td>
             <td>{{ element.chapa }}</td>
             <td>{{ element.categoria.nombre }}</td>
             <td>
-                {% if element.estado == 'Activo' %}
-                <span class="badge py-3 px-4 fs-7 badge-light-primary">{{ element.estado }}</span>
-                {% elif element.estado == 'Venta' %}
-                <span class="badge py-3 px-4 fs-7 badge-light-success">{{ element.estado }}</span>
-                {% elif element.estado == 'Reparación' %}
-                <span class="badge py-3 px-4 fs-7 badge-light-danger">{{ element.estado }}</span>
+                {% if element.estado.nombre == 'Activo' %}
+                    <span class="badge py-3 px-4 fs-7 badge-light-primary">{{ element.estado.nombre }}</span>
+                {% elif element.estado.nombre == 'Venta' %}
+                    <span class="badge py-3 px-4 fs-7 badge-light-success">{{ element.estado.nombre }}</span>
+                {% elif element.estado.nombre == 'Reparación' %}
+                    <span class="badge py-3 px-4 fs-7 badge-light-danger">{{ element.estado.nombre }}</span>
                 {% endif %}
             </td>
-            <td>
-                {% for p in element.propiedades.all %}
-                {{ p.nombre }}
-                    {% if forloop.last %}{% else %},{% endif %}<br>
-                {% endfor %}
-            </td>
+            {#            <td>#}
+            {#                {% for p in element.propiedades.all %}#}
+            {#                    {{ p.nombre }}#}
+            {#                    {% if forloop.last %}{% else %},{% endif %}<br>#}
+            {#                {% endfor %}#}
+            {#            </td>#}
             <td class="text-end">
                 <div class="d-flex justify-content-end flex-shrink-0">
-                    <a href="#" title="Detalles"
-                       class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                        <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
-                        <span class="svg-icon svg-icon-3">
+                    {% if urls.url_detalle %}
+                        <a href="{{ urls.url_detalle }}" title="Detalles"
+                           class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen019.svg-->
+                            <span class="svg-icon svg-icon-3">
                                 																			<svg width="24"
                                                                                                                  height="24"
                                                                                                                  viewBox="0 0 24 24"
@@ -94,8 +96,9 @@
                                                                                                                       fill="currentColor"></path>
                                 																			</svg>
                                 																		</span>
-                        <!--end::Svg Icon-->
-                    </a>
+                            <!--end::Svg Icon-->
+                        </a>
+                    {% endif %}
                     <a href="{{ urls.url_editar }}" title="Editar"
                        class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
                         <!--begin::Svg Icon | path: icons/duotune/art/art005.svg-->
@@ -135,12 +138,13 @@
                                 																		</span>
                         <!--end::Svg Icon-->
                     </a>
-                    <a href="{{ urls.url_pdf }}" target="_blank" title="Exportar a Pdf"
-                       class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
-                        <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
-                        <span class="svg-icon svg-icon-3"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Files\Cloud-download.svg--><svg
-                                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                    {% if urls.url_pdf %}
+                        <a href="{{ urls.url_pdf }}" target="_blank" title="Exportar a Pdf"
+                           class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm">
+                            <!--begin::Svg Icon | path: icons/duotune/general/gen027.svg-->
+                            <span class="svg-icon svg-icon-3"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Files\Cloud-download.svg--><svg
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <polygon points="0 0 24 0 24 24 0 24"/>
         <path d="M5.74714567,13.0425758 C4.09410362,11.9740356 3,10.1147886 3,8 C3,4.6862915 5.6862915,2 9,2 C11.7957591,2 14.1449096,3.91215918 14.8109738,6.5 L17.25,6.5 C19.3210678,6.5 21,8.17893219 21,10.25 C21,12.3210678 19.3210678,14 17.25,14 L8.25,14 C7.28817895,14 6.41093178,13.6378962 5.74714567,13.0425758 Z"
@@ -150,8 +154,54 @@
               transform="translate(11.959697, 18.661508) rotate(-270.000000) translate(-11.959697, -18.661508) "/>
     </g>
 </svg><!--end::Svg Icon--></span>
+                            <!--end::Svg Icon-->
+                        </a>
+                    {% endif %}
+                    <button class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm mx-1"
+                            data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end"
+                            data-kt-menu-overflow="true">
+                        <!--begin::Svg Icon | path: icons/duotune/general/gen023.svg-->
+                        <span class="svg-icon svg-icon-1"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\General\Settings-2.svg--><svg
+                                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24"/>
+                                        <path d="M5,8.6862915 L5,5 L8.6862915,5 L11.5857864,2.10050506 L14.4852814,5 L19,5 L19,9.51471863 L21.4852814,12 L19,14.4852814 L19,19 L14.4852814,19 L11.5857864,21.8994949 L8.6862915,19 L5,19 L5,15.3137085 L1.6862915,12 L5,8.6862915 Z M12,15 C13.6568542,15 15,13.6568542 15,12 C15,10.3431458 13.6568542,9 12,9 C10.3431458,9 9,10.3431458 9,12 C9,13.6568542 10.3431458,15 12,15 Z"
+                                              fill="currentColor"/>
+                                    </g>
+                                                        </svg><!--end::Svg Icon-->
+                        </span>
                         <!--end::Svg Icon-->
-                    </a>
+                    </button>
+                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px"
+                         data-kt-menu="true" style="">
+                        <!--begin::Menu item-->
+                        <div class="menu-item px-3">
+                            <div class="menu-content fs-6 text-dark fw-bold px-3 py-4">Otras Acciones</div>
+                        </div>
+                        <!--end::Menu item-->
+                        <!--begin::Menu separator-->
+                        <div class="separator mb-3 opacity-75"></div>
+                        <!--end::Menu separator-->
+                        <!--begin::Menu item-->
+                        <div class="menu-item px-3">
+                            <a href="{{ urls.url_propiedades }}" class="menu-link px-3">Propiedades</a>
+                        </div>
+                        <!--end::Menu item-->
+                        <!--begin::Menu item-->
+                        {% if urls.url_partes %}
+                            <div class="menu-item px-3">
+                                <a href="{{ urls.url_partes }}" class="menu-link px-3">Partes</a>
+                            </div>
+                        {% elif urls.url_piezas %}
+                            <div class="menu-item px-3">
+                                <a href="{{ urls.url_piezas }}" class="menu-link px-3">Piezas</a>
+                            </div>
+                        {% endif %}
+
+
+                        <!--end::Menu item-->
+                    </div>
                 </div>
             </td>
 

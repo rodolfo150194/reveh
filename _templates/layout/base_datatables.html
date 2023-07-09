@@ -73,7 +73,7 @@
                             <!--begin::Export-->
                             <a href="{% url 'dashboards:generar_pdf_listado_equipo' %}" target="_blank"
                                class="btn btn-light-primary me-3"
-                            ">
+                            >
                             <!--begin::Svg Icon | path: icons/duotune/arrows/arr078.svg-->
                             <span class="svg-icon svg-icon-2">
 														<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -92,12 +92,10 @@
                             </a>
                             <!--end::Export-->
                             <!--begin::Add user-->
-
                             <a href="{% block url_add %}{{ crear_url }}{% endblock %}" type="button"
-                               class="btn btn-primary ">
-
-                                Nuevo
+                               class="btn btn-primary ">Nuevo
                             </a>
+
                             <!--end::Add user-->
                         </div>
                         <!--end::Toolbar-->
@@ -198,7 +196,7 @@
             var nombre = '{{ m }}'
             mensaje.push(nombre)
         {% endfor %}
-        {#var message = {{ messages }};#}
+
     </script>
 
 {% endblock content %}

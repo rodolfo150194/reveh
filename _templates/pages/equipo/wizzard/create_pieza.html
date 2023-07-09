@@ -1,0 +1,256 @@
+{% extends layout %}
+{% load static i18n %}
+{% load bootstrap5 widget_tweaks %}
+{% block title %}
+    {% if 'crear' in request.path %}
+        {% trans 'Crear' %}
+    {% elif 'editar' %}
+        {% trans 'Editar' %}
+    {% endif %}
+    {{ title_html }}
+{% endblock title %}
+{% block breadcumb %}
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        <a href="{% url 'inicio' %}" class="text-white">
+            Inicio
+        </a>
+    </li>
+    <!--end::Item-->
+    <!--begin::Item-->
+    <li class="breadcrumb-item">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
+        <span class="svg-icon svg-icon-5 svg-icon-gray-700 mx-n2">
+												<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                     xmlns="http://www.w3.org/2000/svg">
+													<path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z"
+                                                          fill="currentColor"/>
+												</svg>
+											</span>
+        <!--end::Svg Icon-->
+    </li>
+
+    <li class="breadcrumb-item text-gray-700 fw-bold lh-1">
+        {{ breadcumb_lista }}
+    </li>
+
+{% endblock %}
+{% block content %}
+    <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
+        <!--begin::Content wrapper-->
+        <div class="d-flex flex-column flex-column-fluid">
+            <!--begin::Content-->
+            <div id="kt_app_content" class="app-content px-0" style="padding-top: 5px !important;">
+                <div class="stepper stepper-pills stepper-column d-flex flex-column flex-xl-row flex-row-fluid gap-10"
+                     id="kt_create_account_stepper">
+                    <!--begin::Aside-->
+                    <div class="card d-flex justify-content-center justify-content-xl-start flex-row-auto w-100 w-xl-300px w-xxl-300px">
+                        <!--begin::Wrapper-->
+                        <div class="card-body px-6 px-lg-10 px-xxl-15 py-20">
+                            <!--begin::Nav-->
+                            <div class="stepper-nav">
+                                <!--begin::Step 1-->
+                                <div class="stepper-item current">
+                                    <!--begin::Wrapper-->
+                                    <div class="stepper-wrapper">
+                                        <!--begin::Icon-->
+                                        <div class="stepper-icon w-40px h-40px">
+                                            <i class="stepper-check fas fa-check"></i>
+                                            <span class="stepper-number">1</span>
+                                        </div>
+                                        <!--end::Icon-->
+                                        <!--begin::Label-->
+                                        <div class="stepper-label">
+                                            <h3 class="stepper-title">Pieza</h3>
+                                            <div class="stepper-desc fw-semibold">Datos de la Pieza</div>
+                                        </div>
+                                        <!--end::Label-->
+                                    </div>
+                                    <!--end::Wrapper-->
+                                    <!--begin::Line-->
+                                    <div class="stepper-line h-40px"></div>
+                                    <!--end::Line-->
+                                </div>
+                                <!--end::Step 1-->
+                                <div class="stepper-item" data-kt-stepper-element="nav">
+                                    <!--begin::Wrapper-->
+                                    <div class="stepper-wrapper">
+                                        <!--begin::Icon-->
+                                        <div class="stepper-icon w-40px h-40px">
+                                            <i class="stepper-check fas fa-check"></i>
+                                            <span class="stepper-number">2</span>
+                                        </div>
+                                        <!--end::Icon-->
+                                        <!--begin::Label-->
+                                        <div class="stepper-label">
+                                            <h3 class="stepper-title">Propiedades</h3>
+                                            <div class="stepper-desc fw-semibold">Valores de las propiedades</div>
+                                        </div>
+                                        <!--end::Label-->
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <!--end::Nav-->
+                        </div>
+                        <!--end::Wrapper-->
+                    </div>
+                    <!--begin::Aside-->
+                    <!--begin::Content-->
+                    <div class="card d-flex flex-row-fluid flex-center">
+                        <!--begin::Form-->
+                        <form class="card-body py-20 w-100 mw-xl-900px px-9"
+                              id="kt_create_account_form" method="post" enctype="multipart/form-data">
+                            <!--begin::Step 1-->
+                            {% csrf_token %}
+                            <div class="current" data-kt-stepper-element="content">
+                                <!--begin::Wrapper-->
+                                <div class="w-100">
+                                    <!--begin::Heading-->
+                                    <div class="pb-10">
+                                        <!--begin::Title-->
+                                        <h2 class="fw-bold d-flex align-items-center text-dark">{{ breadcumb_lista }}
+                                            <i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip"
+                                               title="Billing is issued based on your selected account type"></i></h2>
+                                    </div>
+                                    <div class=" px-lg-2">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="mb-4">
+                                                    <label class="form-label required"
+                                                           for="id_nombre">{{ form.nombre.label }}</label>
+                                                    {{ form.nombre }}
+                                                    {% for error in form.nombre.errors %}
+                                                        <p class="text-danger">{{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="mb-4">
+                                                    <label class="form-label required"
+                                                           for="id_categoria">{{ form.categoria.label }}</label>
+                                                    {{ form.categoria }}
+                                                    {% for error in form.categoria.errors %}
+                                                        <p class="text-danger">{{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="mb-4">
+                                                    <label class="form-label required"
+                                                           for="id_marca">{{ form.marca.label }}</label>
+                                                    <div class="row">
+
+                                                        <div class="col-12 d-flex">
+                                                            {{ form.marca | add_class:'form-select' }}
+                                                            {% for error in form.marca.errors %}
+                                                                <p class="text-danger">{{ error }}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="mb-4">
+                                                    <label class="form-label required"
+                                                           for="id_modelo">{{ form.modelo.label }}</label>
+                                                    <div class="row">
+
+                                                        <div class="col-12 d-flex">
+                                                            {{ form.modelo | add_class:'form-select' }}
+                                                            {% for error in form.modelo.errors %}
+                                                                <p class="text-danger">{{ error }}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-4">
+                                                    <label class="form-label"
+                                                           for="id_descripcion">{{ form.descripcion.label }}</label>
+                                                    {{ form.descripcion }}
+                                                    {% for error in form.descripcion.errors %}
+                                                        <p class="text-danger">{{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <label class="form-label"
+                                                       for="id_estado">{{ form.estado.label }}</label>
+                                                <div class="row">
+
+                                                    <div class="col-12 d-flex">
+                                                        {{ form.estado | add_class:'form-select' }}
+                                                        {% for error in form.estado.errors %}
+                                                            <p class="text-danger">{{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <label class="form-label"
+                                                       for="id_propiedades">{{ form.propiedades.label }}</label>
+                                                {{ form.propiedades }}
+                                                {% for error in form.propiedades.errors %}
+                                                    <p class="text-danger">{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            <div class="mb-4">
+                                                <label class="form-label w-100"
+                                                       for="id_foto">{{ form.foto.label }}</label>
+                                                <div class="row">
+                                                    <div class="col-12 d-flex">
+                                                        <input type="file" class="form-control" name="fotos" multiple>
+                                                        {% for error in form.foto.errors %}
+                                                            <p class="text-danger">{{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end::Wrapper-->
+                            </div>
+                            <div class="d-flex flex-stack pt-10">
+                                <!--begin::Wrapper-->
+                                <div class="mr-2">
+                                    <button type="button" class="btn btn-lg btn-light-primary me-3"
+                                            data-kt-stepper-action="previous">
+                                        <!--begin::Svg Icon | path: icons/duotune/arrows/arr063.svg-->
+                                        <span class="svg-icon svg-icon-4 me-1">
+															<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                                                 xmlns="http://www.w3.org/2000/svg">
+																<rect opacity="0.5" x="6" y="11" width="13" height="2"
+                                                                      rx="1" fill="currentColor"/>
+																<path d="M8.56569 11.4343L12.75 7.25C13.1642 6.83579 13.1642 6.16421 12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75L5.70711 11.2929C5.31658 11.6834 5.31658 12.3166 5.70711 12.7071L11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25C13.1642 17.8358 13.1642 17.1642 12.75 16.75L8.56569 12.5657C8.25327 12.2533 8.25327 11.7467 8.56569 11.4343Z"
+                                                                      fill="currentColor"/>
+															</svg>
+														</span>
+                                        <!--end::Svg Icon-->Back
+                                    </button>
+                                </div>
+                                <!--end::Wrapper-->
+                                <!--begin::Wrapper-->
+                                <div>
+
+                                    <button type="submit" class="btn btn-lg btn-primary">
+                                        Siguiente
+                                    </button>
+                                </div>
+                                <!--end::Wrapper-->
+                            </div>
+                            <!--end::Actions-->
+                        </form>
+                        <!--end::Form-->
+                    </div>
+                    <!--end::Content-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

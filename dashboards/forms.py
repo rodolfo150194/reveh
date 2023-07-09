@@ -2,6 +2,8 @@ from django import forms
 from django.forms import Textarea
 
 from dashboards.models import *
+from dashboards.widget import SelectWithPop
+
 
 class OrganismoModelForm(forms.ModelForm):
 
@@ -144,6 +146,7 @@ class PiezaModelForm(forms.ModelForm):
     class Meta:
         model = Pieza
         fields = '__all__'
+        exclude = ['foto','insumo']
 
         widgets = {
             'categoria': forms.Select(attrs={'data-control':'select2', 'required': 'required','class': 'form-select'}),
@@ -173,11 +176,16 @@ class PropiedadPiezaModelForm(forms.ModelForm):
             'valor': forms.TextInput(attrs={'class': 'form-control valor'}),
         }
 
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['propiedad'].label = self.instance.propiedad.nombre
+
 
 class ParteModelForm(forms.ModelForm):
     class Meta:
         model = Parte
         fields = '__all__'
+        exclude = ['fotos','piezas','insumo']
 
         widgets = {
             'categoria': forms.Select(attrs={'data-control':'select2', 'required': 'required','class':'form-select'}),
@@ -190,8 +198,9 @@ class ParteModelForm(forms.ModelForm):
             ),
             'marca': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
             'modelo': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
-            'piezas': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'}),
-            'propiedades': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'})
+            # 'piezas': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'}),
+            'propiedades': forms.SelectMultiple(attrs={'data-control':'select2', 'multiple': 'multiple','class':'form-select'}),
+
             # 'piezas': SelectMultipleWithPop
         }
 
@@ -207,27 +216,36 @@ class PropiedadParteModelForm(forms.ModelForm):
             'valor': forms.TextInput(attrs={'class': 'form-control valor'}),
         }
 
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['propiedad'].label = self.instance.propiedad.nombre
+
 
 class EquipoModelForm(forms.ModelForm):
     class Meta:
         model = Equipo
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['user','fotos','partes']
 
         widgets = {
+            # 'categoria': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
             'categoria': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+
             'estado': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
             'codigo': forms.TextInput(attrs={'class': 'form-control'}),
+            'chapa': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': Textarea(
                 attrs={
                     'class': 'form-control', 'rows': 3, 'cols': 2
                 }
             ),
-            'marca': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
-            'modelo': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
-            'partes': forms.SelectMultiple(attrs={'class':'select2','data-control':'select2', 'multiple': 'multiple'}),
-            'propiedades': forms.SelectMultiple(attrs={'class':'select2','data-control':'select2', 'multiple': 'multiple'}),
-            'empresa': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'})
+            # 'marca': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'marca': SelectWithPop,
+            # 'modelo': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'modelo': SelectWithPop,
+            'partes': forms.SelectMultiple(attrs={'class':'form-select','data-control':'select2', 'multiple': 'multiple'}),
+            'propiedades': forms.SelectMultiple(attrs={'class':'form-select','data-control':'select2', 'multiple': 'multiple'}),
+            'empresa': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
             # 'partes': SelectMultipleWithPop
         }
 
@@ -241,4 +259,30 @@ class PropiedadEquipoModelForm(forms.ModelForm):
             'equipo': forms.HiddenInput(attrs={'class': 'form-control d-none'}),
             'propiedad': forms.HiddenInput(attrs={'class': 'form-control'}),
             'valor': forms.TextInput(attrs={'class': 'form-control valor'}),
+        }
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['propiedad'].label = self.instance.propiedad.nombre
+
+
+class EquipoxParteModelForm(forms.ModelForm):
+    class Meta:
+        model = CategoriaEquipoxPartes
+        fields = '__all__'
+
+        widgets = {
+            'categoriaequipo': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'parte': forms.SelectMultiple(attrs={'class':'form-select','data-control':'select2', 'multiple': 'multiple'}),
+        }
+
+
+class PartexPiezaModelForm(forms.ModelForm):
+    class Meta:
+        model = CategoriaPartexPiezas
+        fields = '__all__'
+
+        widgets = {
+            'categoriaparte': forms.Select(attrs={'class':'form-select', 'data-control':'select2', 'required': 'required'}),
+            'pieza': forms.SelectMultiple(attrs={'class':'form-select','data-control':'select2', 'multiple': 'multiple'}),
         }
